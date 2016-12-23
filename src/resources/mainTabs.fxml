@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<TabPane xmlns="http://javafx.com/javafx/8.0.112"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="app.controller.MainTabController"
+         stylesheets="css/general.css">
+
+    <Tab text="Experiment" closable="false" >
+        <fx:include source="protocol/protocol.fxml" fx:id="protocol" styleClass="paddedContainer"/>
+    </Tab>
+
+    <Tab text="Pump Setup" closable="false">
+        <fx:include source="pumpsetup.fxml" fx:id="pumpSetup" styleClass="paddedContainer"/>
+    </Tab>
+
+    <Tab text="Pump Priming" closable="false">
+
+    </Tab>
+
+</TabPane>

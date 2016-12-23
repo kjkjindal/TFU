@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+
+<MenuBar xmlns="http://javafx.com/javafx/8.0.112"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="app.controller.MenuController">
+
+    <Menu text="File">
+        <MenuItem accelerator="Shortcut+N" onAction="#newExperiment" text="New Experiment" />
+        <MenuItem accelerator="Shortcut+O" onAction="#loadExperiment" text="Open Experiment..." />
+        <MenuItem accelerator="Shortcut+S" onAction="#saveExperiment" text="Save Experiment..." />
+        <MenuItem accelerator="Shortcut+Shift+S" onAction="#saveExperimentAs" text="Save Experiment As..." />
+        <SeparatorMenuItem />
+        <MenuItem onAction="#about" text="About..." />
+
+        <SeparatorMenuItem />
+
+        <MenuItem onAction="#preferences" text="Preferences..." />
+
+        <SeparatorMenuItem />
+        <MenuItem accelerator="Shortcut+Q" onAction="#quit" text="Exit" />
+    </Menu>
+
+    <Menu text="Edit">
+        <MenuItem fx:id="undoMenuItem" accelerator="Shortcut+Z" onAction="#undo" text="Undo" />
+        <MenuItem fx:id="redoMenuItem" accelerator="Shortcut+Shift+Z" onAction="#redo" text="Redo" />
+
+        <SeparatorMenuItem />
+
+        <MenuItem fx:id="copyMenuItem" accelerator="Shortcut+C" onAction="#copy" text="Copy" />
+        <MenuItem fx:id="cutMenuItem" accelerator="Shortcut+X" onAction="#cut" text="Cut" />
+        <MenuItem fx:id="pasteMenuItem" accelerator="Shortcut+V" onAction="#paste" text="Paste" />
+
+        <SeparatorMenuItem />
+
+        <MenuItem fx:id="selectAllMenuItem" accelerator="Shortcut+A" onAction="#selectAll" text="Select All" />
+        <MenuItem fx:id="deselectAllMenuItem" accelerator="Shortcut+D" onAction="#deselectAll" text="Deelect All" />
+        <MenuItem fx:id="deleteSelectedMenuItem" accelerator="Shortcut+DELETE" onAction="#deleteSelected" text="Delete" />
+
+        <SeparatorMenuItem />
+
+        <MenuItem fx:id="groupMenuItem" accelerator="Shortcut+G" onAction="#groupSelected" text="Group" />
+        <MenuItem fx:id="ungroupMenuItem" accelerator="Shortcut+U" onAction="#ungroupSelected" text="Ungroup" />
+    </Menu>
+
+    <Menu text="Action">
+        <MenuItem fx:id="playMenuItem" accelerator="Shortcut+P" onAction="#execute" text="Execute " />
+        <MenuItem fx:id="stopMenuItem" accelerator="Shortcut+." onAction="#abort" text="Abort" />
+    </Menu>
+
+</MenuBar>

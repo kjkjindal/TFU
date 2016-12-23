@@ -1,0 +1,12 @@
+.paddedContainer {
+    -fx-padding: 10px;
+}
+
+.heading {
+    -fx-padding: 0 0 10px 0;
+    -fx-font-size: 16px;
+}
+
+.tree-cell > .tree-disclosure-node {
+  -fx-padding: 13 3 0 4;
+}
