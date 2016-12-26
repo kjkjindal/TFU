@@ -7,16 +7,16 @@
          fx:controller="app.controller.MainTabController"
          stylesheets="css/general.css">
 
-    <Tab text="Experiment" closable="false" >
-        <fx:include source="protocol/protocol.fxml" fx:id="protocol" styleClass="paddedContainer"/>
-    </Tab>
-
     <Tab text="Pump Setup" closable="false">
-        <fx:include source="pumpsetup.fxml" fx:id="pumpSetup" styleClass="paddedContainer"/>
+        <fx:include source="/pumpsetup/pumpsetup.fxml" fx:id="pumpSetup" styleClass="paddedContainer"/>
     </Tab>
 
     <Tab text="Pump Priming" closable="false">
 
+    </Tab>
+
+    <Tab text="Experiment" closable="false" >
+        <fx:include source="protocol/protocol.fxml" fx:id="protocol" styleClass="paddedContainer"/>
     </Tab>
 
 </TabPane>

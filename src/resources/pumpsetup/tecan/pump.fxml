@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<TitledPane fx:id="pumpTitledFrame" animated="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="350.0" text="Pump Name" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.pumpsetup.tecan.PumpController">
+    <content>
+
+        <VBox prefWidth="100.0">
+            <children>
+                <HBox alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="23.0" fitWidth="23.0" opacity="0.65" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../img/Syringe-dark-icon.png" />
+                            </image>
+                            <HBox.margin>
+                                <Insets right="5.0" />
+                            </HBox.margin>
+                        </ImageView>
+                        <ComboBox fx:id="syringeVolume" prefWidth="100.0" promptText="Syringe">
+                            <HBox.margin>
+                                <Insets left="5.0" right="20.0" />
+                            </HBox.margin>
+                        </ComboBox>
+                        <ImageView fitHeight="35.0" fitWidth="32.0" opacity="0.65" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../img/Ports-dark-icon.png" />
+                            </image>
+                            <HBox.margin>
+                                <Insets left="20.0" right="5.0" />
+                            </HBox.margin>
+                        </ImageView>
+                        <TextField fx:id="numPorts" alignment="TOP_CENTER" prefWidth="60.0" promptText="# ports">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </TextField>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </HBox>
+            <Separator prefWidth="200.0" />
+                <VBox fx:id="ports">
+                    <children>
+
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+
+    </content>
+</TitledPane>

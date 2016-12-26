@@ -2,6 +2,7 @@ package app.controller;
 
 import app.controller.protocol.ProtocolController;
 import app.controller.pumpsetup.PumpSetupController;
+import app.model.pump.PumpManager;
 import javafx.fxml.FXML;
 
 /**
@@ -9,10 +10,8 @@ import javafx.fxml.FXML;
  */
 public class MainTabController {
 
-    @FXML
-    ProtocolController protocolController;
-    @FXML
-    PumpSetupController pumpSetupController;
+    @FXML ProtocolController protocolController;
+    @FXML PumpSetupController pumpSetupController;
 
     @FXML
     public void initialize() {

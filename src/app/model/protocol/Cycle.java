@@ -102,7 +102,7 @@ public class Cycle implements ProtocolComponent, Saveable {
     }
 
     public void execute() {
-        this.setStatus(Status.IN_PROCESS);
+        this.setStatus(Status.IN_PROGRESS);
         try {
             for (Command c : this.commandList)
                 if (c != null)

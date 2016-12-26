@@ -14,10 +14,9 @@ import java.util.List;
 public class AppController {
 
     private Stage primaryStage;
-    @FXML
-    private MenuController menuBarController;
-    @FXML
-    private MainTabController mainTabsController;
+
+    @FXML private MenuController menuBarController;
+    @FXML private MainTabController mainTabsController;
 
     public AppController(Stage primaryStage) { this.primaryStage = primaryStage; }
 

@@ -15,10 +15,6 @@
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="40.0" />
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="20.0" />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="20.0" />
@@ -27,7 +23,7 @@
     <children>
         <ImageView fx:id="icon" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
             <image>
-                <Image url="@../img/Protocol-icon.png" />
+                <Image url="@../img/Protocol-NotStarted-icon.png" />
             </image>
         </ImageView>
         <Label fx:id="name" maxWidth="190.0" text="Dispense '1x instrument buffer' to 'sample'" GridPane.columnIndex="1" GridPane.columnSpan="5">
@@ -35,7 +31,7 @@
                 <Font name="Avenir Medium" size="12.0" />
             </font>
         </Label>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <HBox fx:id="controls" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <ImageView fitHeight="13.0" fitWidth="13.0" opacity="0.4" pickOnBounds="true" preserveRatio="true">
                <image>

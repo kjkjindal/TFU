@@ -14,7 +14,7 @@
          <padding>
             <Insets right="5.0" />
          </padding></Label>
-      <TextField fx:id="name" prefWidth="180.0" />
+      <TextField fx:id="name" prefWidth="250.0" />
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

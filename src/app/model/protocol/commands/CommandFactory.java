@@ -9,14 +9,15 @@ import org.w3c.dom.NamedNodeMap;
 public class CommandFactory {
 
     public static Command createCommand(CommandType type) {
+        Command cmd = null;
         switch (type) {
             case OneWayCommand:
-                return new OneWayCommand();
-
+                cmd = new OneWayCommand();
+                break;
             default:
                 break;
         }
-        return null;
+        return cmd;
     }
 
     public static Command createCommandFromXML(Element element) {

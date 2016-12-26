@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * Created by alexskrynnyk on 12/21/16.
  */
 public class CommandTypeSettingsController implements SettingsController {
-    @FXML
-    private ComboBox<String> type;
+
+    @FXML private ComboBox<String> type;
 
     private Command command;
 

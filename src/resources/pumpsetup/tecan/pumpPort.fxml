@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox alignment="BASELINE_CENTER" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.pumpsetup.tecan.PumpPortController">
+    <children>
+        <Label fx:id="portNumber" alignment="BASELINE_CENTER" prefWidth="20.0" text="n)">
+            <HBox.margin>
+                <Insets right="5.0" />
+            </HBox.margin>
+        </Label>
+        <TextField fx:id="portName" alignment="BASELINE_CENTER" prefWidth="200.0" promptText="Port name">
+            <HBox.margin>
+                <Insets left="5.0" right="5.0" />
+            </HBox.margin>
+        </TextField>
+        <ComboBox fx:id="portType" prefWidth="110.0">
+            <HBox.margin>
+                <Insets left="5.0" />
+            </HBox.margin>
+        </ComboBox>
+    </children>
+   <padding>
+      <Insets bottom="5.0" top="5.0" />
+   </padding>
+</HBox>

@@ -1,5 +1,6 @@
 package app.controller.protocol;
 
+import app.model.protocol.Protocol;
 import app.model.protocol.ProtocolComponent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -10,7 +11,8 @@ import javafx.scene.control.TextField;
 public class ProtocolSettingsController implements SettingsController {
 
     @FXML private TextField name;
-    private ProtocolComponent component;
+
+    private Protocol protocol;
 
     @FXML
     public void initialize() {
@@ -18,15 +20,15 @@ public class ProtocolSettingsController implements SettingsController {
     }
 
     public void configure(ProtocolComponent component) {
-        this.name.setText(component.getName());
+        this.protocol = (Protocol) component;
 
-        this.component = component;
+        this.name.setText(this.protocol.getName());
 
-        this.component.nameProperty().bind(this.name.textProperty());
+        this.protocol.nameProperty().bind(this.name.textProperty());
     }
 
     public void unbind() {
-        this.component.nameProperty().unbind();
+        this.protocol.nameProperty().unbind();
     }
 
 }

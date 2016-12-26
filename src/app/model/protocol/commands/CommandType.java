@@ -23,18 +23,22 @@ public enum CommandType {
     }
 
     public static CommandType getByClassName(String className) {
-        for (CommandType cmd : CommandType.values()) {
+        CommandType type = null;
+
+        for (CommandType cmd : CommandType.values())
             if (cmd.getClassName().equals(className))
-                return cmd;
-        }
-        return null;
+                type = cmd;
+
+        return type;
     }
 
     public static CommandType getByFullName(String fullName) {
-        for (CommandType cmd : CommandType.values()) {
+        CommandType type = null;
+
+        for (CommandType cmd : CommandType.values())
             if (cmd.getFullName().equals(fullName))
-                return cmd;
-        }
-        return null;
+                type = cmd;
+
+        return type;
     }
 }

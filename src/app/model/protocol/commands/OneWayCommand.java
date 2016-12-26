@@ -11,7 +11,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 
 /**
  * Created by alexskrynnyk on 12/20/16.
@@ -31,28 +30,28 @@ public class OneWayCommand extends Command {
         this.volume = new SimpleIntegerProperty(0);
         this.extractSpeed = new SimpleIntegerProperty(15);
         this.dispenseSpeed = new SimpleIntegerProperty(15);
-        this.pump = new SimpleObjectProperty<>(null);
-        this.fromPort = new SimpleObjectProperty<>(null);
-        this.toPort = new SimpleObjectProperty<>(null);
+        this.pump = new SimpleObjectProperty<>(new Pump());
+        this.fromPort = new SimpleObjectProperty<>(new PumpPort(2));
+        this.toPort = new SimpleObjectProperty<>(new PumpPort(3));
     }
 
     public void setVolume(int newVolume) { this.volume.set(newVolume); }
 
     public int getVolume() { return  this.volume.get(); }
 
-    public IntegerProperty getVolumeProperty() { return this.volume; }
+    public IntegerProperty volumeProperty() { return this.volume; }
 
     public void setExtractSpeed(int extractSpeed) { this.extractSpeed.set(extractSpeed); }
 
     public int getExtractSpeed() { return  this.extractSpeed.get(); }
 
-    public IntegerProperty getExtractSpeedProperty() { return this.extractSpeed; }
+    public IntegerProperty extractSpeedProperty() { return this.extractSpeed; }
 
     public void setDispenseSpeed(int dispenseSpeed) { this.dispenseSpeed.set(dispenseSpeed); }
 
     public int getDispenseSpeed() { return  this.dispenseSpeed.get(); }
 
-    public IntegerProperty getDispenseSpeedProperty() { return this.dispenseSpeed; }
+    public IntegerProperty dispenseSpeedProperty() { return this.dispenseSpeed; }
 
     public void setPump(Pump pump) { this.pump.set(pump); }
 
@@ -74,7 +73,7 @@ public class OneWayCommand extends Command {
 
     @Override
     public void execute() {
-        this.setStatus(Status.IN_PROCESS);
+        this.setStatus(Status.IN_PROGRESS);
         try {
             Logger.log("Using pump " + this.pump);
 

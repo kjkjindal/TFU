@@ -6,7 +6,6 @@ import app.model.Saveable;
 import app.model.protocol.commands.Command;
 import app.model.protocol.commands.CommandFactory;
 import app.model.protocol.commands.CommandType;
-import app.model.protocol.commands.OneWayCommand;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +35,9 @@ public class Protocol implements ProtocolComponent, Saveable {
 
         Command cmd1 = CommandFactory.createCommand(CommandType.OneWayCommand);
         cmd1.setName("Dispense '1x instrument buffer' to 'sample'");
+        cmd1.setStatus(Status.COMPLETE);
         Command cmd2 = CommandFactory.createCommand(CommandType.OneWayCommand);
+        cmd2.setStatus(Status.IN_PROGRESS);
         cmd2.setName("Extract 'sample' to 'waste'");
         Command cmd3 = CommandFactory.createCommand(CommandType.OneWayCommand);
         cmd3.setName("Wait for 15 min");
@@ -61,7 +62,7 @@ public class Protocol implements ProtocolComponent, Saveable {
 
     @Override
     public void execute() {
-        this.setStatus(Status.IN_PROCESS);
+        this.setStatus(Status.IN_PROGRESS);
         try {
             for (Cycle c : this.cycleList)
                 if (c != null)
