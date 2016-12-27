@@ -14,7 +14,9 @@ import javafx.util.converter.NumberStringConverter;
 import java.util.ArrayList;
 
 /**
- * Created by alexskrynnyk on 12/21/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/21/16
  */
 public class OneWayCommandSettingsController implements SettingsController {
 

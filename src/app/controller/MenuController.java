@@ -3,7 +3,9 @@ package app.controller;
 import javafx.fxml.FXML;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class MenuController {
 

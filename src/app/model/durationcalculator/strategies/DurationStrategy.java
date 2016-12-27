@@ -4,7 +4,9 @@ import app.model.durationcalculator.DurationType;
 import app.model.protocol.commands.Command;
 
 /**
- * Created by alexskrynnyk on 12/23/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/23/16
  */
 public interface DurationStrategy {
 

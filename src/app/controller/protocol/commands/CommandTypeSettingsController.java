@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by alexskrynnyk on 12/21/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/21/16
  */
 public class CommandTypeSettingsController implements SettingsController {
 

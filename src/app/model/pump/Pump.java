@@ -1,23 +1,26 @@
 package app.model.pump;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class Pump {
 
     private ListProperty<PumpPort> pumpPortList;
     private IntegerProperty syringeVolume;
+    private IntegerProperty numPortrs;
+    private StringProperty pumpName;
 
     public Pump() {
         this.pumpPortList = new SimpleListProperty<>(FXCollections.observableArrayList());
         this.syringeVolume = new SimpleIntegerProperty(1000);
+        this.numPortrs = new SimpleIntegerProperty(9);
+        this.pumpName = new SimpleStringProperty("New pump");
     }
 
     public void addPumpPort(PumpPort port) {
@@ -34,9 +37,7 @@ public class Pump {
         return pumpPortList;
     }
 
-    public void setPumpPortList(ObservableList<PumpPort> pumpPortList) {
-        this.pumpPortList.set(pumpPortList);
-    }
+    public void setPumpPortList(ObservableList<PumpPort> pumpPortList) { this.pumpPortList.set(pumpPortList); }
 
     public int getSyringeVolume() {
         return syringeVolume.get();
@@ -46,7 +47,17 @@ public class Pump {
         return syringeVolume;
     }
 
-    public void setSyringeVolume(int syringeVolume) {
-        this.syringeVolume.set(syringeVolume);
-    }
+    public void setSyringeVolume(int syringeVolume) { this.syringeVolume.set(syringeVolume); }
+
+    public int getNumPortrs() { return numPortrs.get(); }
+
+    public IntegerProperty numPortrsProperty() { return numPortrs; }
+
+    public void setNumPortrs(int numPortrs) { this.numPortrs.set(numPortrs); }
+
+    public String getPumpName() { return pumpName.get(); }
+
+    public StringProperty pumpNameProperty() { return pumpName; }
+
+    public void setPumpName(String pumpName) { this.pumpName.set(pumpName); }
 }

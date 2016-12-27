@@ -12,7 +12,9 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 
 /**
- * Created by alexskrynnyk on 12/25/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/25/16
  */
 public class PumpController {
 

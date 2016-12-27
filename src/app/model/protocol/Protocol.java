@@ -13,7 +13,9 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class Protocol implements ProtocolComponent, Saveable {
 

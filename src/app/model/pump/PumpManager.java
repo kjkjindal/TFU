@@ -6,7 +6,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * Created by alexskrynnyk on 12/23/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/23/16
  */
 public class PumpManager {
 
@@ -17,7 +19,7 @@ public class PumpManager {
 
         Pump pump1 = new Pump();
         for(int i = 0; i < 9; i++) {
-            PumpPort port = new PumpPort(i);
+            PumpPort port = new PumpPort(pump1, i);
             port.setPortName("Pump ONE port "+i);
             pump1.addPumpPort(port);
         }
@@ -26,7 +28,7 @@ public class PumpManager {
 
         Pump pump2 = new Pump();
         for(int i = 0; i < 9; i++) {
-            PumpPort port = new PumpPort(i);
+            PumpPort port = new PumpPort(pump2, i);
             port.setPortName("Pump TWO port " + i);
             pump2.addPumpPort(port);
         }

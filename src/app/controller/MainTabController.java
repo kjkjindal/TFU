@@ -6,12 +6,14 @@ import app.model.pump.PumpManager;
 import javafx.fxml.FXML;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class MainTabController {
 
-    @FXML ProtocolController protocolController;
-    @FXML PumpSetupController pumpSetupController;
+    @FXML private ProtocolController protocolController;
+    @FXML private PumpSetupController pumpSetupController;
 
     @FXML
     public void initialize() {

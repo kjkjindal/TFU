@@ -3,18 +3,22 @@ package app.model.pump;
 import javafx.beans.property.*;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class PumpPort {
 
     private IntegerProperty portNum;
     private StringProperty portName;
     private ObjectProperty<PortType> portType;
+    private ObjectProperty<Pump> pump;
 
-    public PumpPort(int portNum) {
+    public PumpPort(Pump pump, int portNum) {
         this.portNum = new SimpleIntegerProperty(portNum);
         this.portName = new SimpleStringProperty("");
         this.portType = new SimpleObjectProperty<>(PortType.EMPTY);
+        this.pump = new SimpleObjectProperty<>(pump);
     }
 
     public int getPortNum() {
@@ -52,4 +56,10 @@ public class PumpPort {
     public void setPortType(PortType portType) {
         this.portType.set(portType);
     }
+
+    public Pump getPump() { return pump.get(); }
+
+    public ObjectProperty<Pump> pumpProperty() { return pump; }
+
+    public void setPump(Pump pump) { this.pump.set(pump); }
 }

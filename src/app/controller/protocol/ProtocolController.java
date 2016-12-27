@@ -22,7 +22,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class ProtocolController {
 
@@ -116,7 +118,7 @@ public class ProtocolController {
         public ProtocolTreeCell() {
 
             FXMLLoader fxmlLoader = new FXMLLoader(
-                    App.class.getResource("/FXcomponents/protocolTreeCell.fxml")
+                    getClass().getResource("/FXcomponents/protocolTreeCell.fxml")
             );
             try {
                 cell = fxmlLoader.load();
@@ -136,7 +138,7 @@ public class ProtocolController {
             duration.setText(obj.getDuration()+" min");
 
             String url = String.valueOf(
-                    App.class.getResource("../resources/img/"+obj.getClass().getSimpleName()+"-"+obj.getStatus().getCompoundName()+"-icon.png")
+                    getClass().getResource("/resources/img/"+obj.getClass().getSimpleName()+"-"+obj.getStatus().getCompoundName()+"-icon.png")
             );
 
 //            System.out.println("../resources/img/"+obj.getClass().getSimpleName()+"-"+obj.getStatus().getCompoundName()+"-icon.png");
@@ -167,8 +169,8 @@ public class ProtocolController {
                 add.setVisible(true);
                 add.setOnMouseClicked(e -> {
 
-                    List<String> commandOptions = Arrays.asList(CommandType.values()).stream()
-                            .map(c -> c.getFullName())
+                    List<String> commandOptions = Arrays.stream(CommandType.values())
+                            .map(CommandType::getFullName)
                             .collect(Collectors.toList());
 
                     ChoiceDialog dialog = new ChoiceDialog(commandOptions.get(0), commandOptions);
@@ -207,6 +209,7 @@ public class ProtocolController {
                 });
             } else if (obj instanceof Protocol) {
                 add.setVisible(true);
+
                 add.setOnMouseClicked(e -> {
                     Cycle newCycle = new Cycle();
 

@@ -13,7 +13,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public class OneWayCommand extends Command {
 
@@ -31,8 +33,8 @@ public class OneWayCommand extends Command {
         this.extractSpeed = new SimpleIntegerProperty(15);
         this.dispenseSpeed = new SimpleIntegerProperty(15);
         this.pump = new SimpleObjectProperty<>(new Pump());
-        this.fromPort = new SimpleObjectProperty<>(new PumpPort(2));
-        this.toPort = new SimpleObjectProperty<>(new PumpPort(3));
+        this.fromPort = new SimpleObjectProperty<>(new PumpPort(this.pump.get(), 2));
+        this.toPort = new SimpleObjectProperty<>(new PumpPort(this.pump.get(), 3));
     }
 
     public void setVolume(int newVolume) { this.volume.set(newVolume); }
@@ -72,6 +74,7 @@ public class OneWayCommand extends Command {
     public ObjectProperty<PumpPort> toPortProperty() { return this.toPort; }
 
     @Override
+    // TODO: make execution on separate thread
     public void execute() {
         this.setStatus(Status.IN_PROGRESS);
         try {

@@ -1,7 +1,9 @@
 package app.model.protocol.commands;
 
 /**
- * Created by alexskrynnyk on 12/22/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/22/16
  */
 public enum CommandType {
     OneWayCommand("OneWayCommand", "One Way Command");

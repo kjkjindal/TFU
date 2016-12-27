@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Created by alexskrynnyk on 12/25/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/25/16
  */
 public class PumpPortController {
 
@@ -25,11 +27,15 @@ public class PumpPortController {
     }
 
     public void configure(PumpPort port, int number) {
+        this.portName.setText(port.getPortName());
+
         port.portNameProperty().bind(this.portName.textProperty());
 
         this.portNumber.setText(number+")");
 
         this.setupControls();
+
+        this.portType.setValue(port.getPortType().getName());
 
         this.portType.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
             port.setPortType(PortType.getByName(newVal.toString()));

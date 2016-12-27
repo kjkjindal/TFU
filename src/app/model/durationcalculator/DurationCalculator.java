@@ -8,7 +8,9 @@ import app.model.protocol.commands.Command;
 import app.model.protocol.commands.CommandType;
 
 /**
- * Created by alexskrynnyk on 12/23/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/23/16
  */
 public class DurationCalculator {
 

@@ -6,7 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 /**
- * Created by alexskrynnyk on 12/22/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/22/16
  */
 public class ProtocolSettingsController implements SettingsController {
 

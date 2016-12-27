@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by alexskrynnyk on 12/24/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/24/16
  */
 public class PumpSpeedCalculator {
 

@@ -9,7 +9,9 @@ import javafx.beans.property.*;
 import org.w3c.dom.Element;
 
 /**
- * Created by alexskrynnyk on 12/20/16.
+ * Project: FluidXMan
+ * Author: alexskrynnyk
+ * Date: 12/20/16
  */
 public abstract class Command implements ProtocolComponent, Saveable {
 

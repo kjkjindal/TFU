@@ -12,7 +12,8 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception{
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(
-                    this.getClass().getResource("../resources/main.fxml"));
+                    getClass().getResource("/resources/main.fxml")
+            );
             fxmlLoader.setController(new AppController(primaryStage));
 
             primaryStage.setTitle("FluidXAuto");
