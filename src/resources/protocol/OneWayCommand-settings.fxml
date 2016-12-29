@@ -26,8 +26,8 @@
       <Label text="Extract from:" GridPane.halignment="CENTER" />
       <ComboBox fx:id="fromPort" prefWidth="230.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
       <ComboBox fx:id="toPort" prefWidth="230.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-      <ComboBox fx:id="extractSpeed" prefWidth="65.0" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-      <ComboBox fx:id="dispenseSpeed" prefWidth="65.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+      <ComboBox fx:id="extractSpeed" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+      <ComboBox fx:id="dispenseSpeed" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
       <Label alignment="BASELINE_CENTER" text="Volume (uL):" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
       <TextField fx:id="volume" alignment="BASELINE_CENTER" prefWidth="50.0" promptText="0-9999" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label text="Extract speed:" GridPane.halignment="CENTER" GridPane.rowIndex="2" />

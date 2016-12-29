@@ -9,7 +9,7 @@ public enum PortType {
     EMPTY("Empty"),
     REAGENT("Reagent"),
     WASH("Wash"),
-    SAMPLE("Sample"),
+    OUTPUT("Output"),
     WASTE("Waste");
 
     private String name;

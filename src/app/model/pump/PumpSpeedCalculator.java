@@ -58,20 +58,22 @@ public class PumpSpeedCalculator {
         speedToStroketimeMap.put(40, 620.0);
     }
 
-    public static List<Double> getSpeeds(Pump pump, SpeedUnits units) {
-        List<Double> speeds = new ArrayList();
+    public static Map<String, Double> getSpeeds(Pump pump, SpeedUnits units) {
+        Map<String, Double> speeds = new HashMap<>();
 
         int syringeVolume = pump.getSyringeVolume();
 
         switch (units) {
             case MICROLITERS_PER_SECOND:
                 for(Integer key : speedToStroketimeMap.keySet()) {
-                    speeds.add(Math.round(syringeVolume / speedToStroketimeMap.get(key)*10.0)/10.0);
+                    double value = Math.round(syringeVolume / speedToStroketimeMap.get(key)*10.0)/10.0;
+                    speeds.put(String.valueOf(value+" uL/sec"), value);
                 }
                 break;
             case MILLILITERS_PER_MINUTE:
                 for(Integer key : speedToStroketimeMap.keySet()) {
-                    speeds.add(Math.round((syringeVolume/1000) / (speedToStroketimeMap.get(key)/60)*10.0)/10.0);
+                    double value = Math.round((syringeVolume/1000) / (speedToStroketimeMap.get(key)/60)*10.0)/10.0;
+                    speeds.put(String.valueOf(value+" mL/min"), value);
                 }
                 break;
         }

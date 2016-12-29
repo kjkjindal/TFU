@@ -32,9 +32,9 @@ public class OneWayCommand extends Command {
         this.volume = new SimpleIntegerProperty(0);
         this.extractSpeed = new SimpleIntegerProperty(15);
         this.dispenseSpeed = new SimpleIntegerProperty(15);
-        this.pump = new SimpleObjectProperty<>(new Pump());
-        this.fromPort = new SimpleObjectProperty<>(new PumpPort(this.pump.get(), 2));
-        this.toPort = new SimpleObjectProperty<>(new PumpPort(this.pump.get(), 3));
+        this.pump = new SimpleObjectProperty<>(null);
+        this.fromPort = new SimpleObjectProperty<>(null);
+        this.toPort = new SimpleObjectProperty<>(null);
     }
 
     public void setVolume(int newVolume) { this.volume.set(newVolume); }

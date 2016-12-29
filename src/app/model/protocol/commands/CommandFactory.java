@@ -1,5 +1,6 @@
 package app.model.protocol.commands;
 
+import app.model.pump.PumpManager;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
@@ -9,6 +10,12 @@ import org.w3c.dom.NamedNodeMap;
  * Date: 12/20/16
  */
 public class CommandFactory {
+
+    private PumpManager pumpManager;
+
+    public CommandFactory(PumpManager pumpManager) {
+        this.pumpManager = pumpManager;
+    }
 
     public static Command createCommand(CommandType type) {
         Command cmd = null;

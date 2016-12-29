@@ -20,7 +20,7 @@ public class PumpManager {
         Pump pump1 = new Pump();
         for(int i = 0; i < 9; i++) {
             PumpPort port = new PumpPort(pump1, i);
-            port.setPortName("Pump ONE port "+i);
+//            port.setPortName("Pump ONE port "+i);
             pump1.addPumpPort(port);
         }
 

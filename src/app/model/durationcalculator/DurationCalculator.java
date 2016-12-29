@@ -45,14 +45,17 @@ public class DurationCalculator {
 
     public DurationStrategy getStrategy(Command cmd) {
         CommandType type = CommandType.getByClassName(cmd.getClass().getSimpleName());
+
+        DurationStrategy strategy = null;
+
         switch (type) {
             case OneWayCommand:
-                return new OneWayCommandDurationStrategy();
+                strategy = new OneWayCommandDurationStrategy();
 
             default:
                 break;
         }
-        return null;
+        return strategy;
     }
 
 }

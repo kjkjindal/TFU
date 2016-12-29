@@ -1,6 +1,8 @@
 package app.controller.pumpsetup.tecan;
 
+import app.utility.Util;
 import app.model.pump.Pump;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -10,6 +12,8 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Project: FluidXMan
@@ -35,15 +39,35 @@ public class PumpController {
 
         this.setupPumpControls();
 
-        this.createPortControls();
+        this.bindModelToControls();
+
+        this.loadPortControls();
     }
 
     private void setupPumpControls() {
+        this.pumpTitledFrame.setText(this.pump.getPumpName());
+
         this.syringeVolume.setValue(this.pump.getSyringeVolume());
-        this.numPorts.setText(this.pump.getPumpPortList().size()+"");
+        List<Integer> syringeVolumes = new ArrayList<>();
+        syringeVolumes.add(250);
+        syringeVolumes.add(500);
+        syringeVolumes.add(1000);
+        syringeVolumes.add(5000);
+        this.syringeVolume.setItems(FXCollections.observableList(syringeVolumes));
+
+        this.numPorts.setText(String.valueOf(this.pump.getPumpPortList().size()));
     }
 
-    private void createPortControls() {
+    private void bindModelToControls() {
+        this.syringeVolume.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
+            this.pump.setSyringeVolume(Integer.valueOf(newVal.toString()));
+        });
+
+        Util.restrictTextFieldLength(this.numPorts, 1);
+        Util.confineTextFieldToNumericAndBind(this.numPorts, this.pump::setNumPortrs);
+    }
+
+    private void loadPortControls() {
         try {
             for(int i = 0; i < this.pump.getPumpPortList().size(); i++) {
                 FXMLLoader loader = new FXMLLoader(

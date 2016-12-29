@@ -16,7 +16,7 @@ public class App extends Application {
             );
             fxmlLoader.setController(new AppController(primaryStage));
 
-            primaryStage.setTitle("FluidXAuto");
+            primaryStage.setTitle("FluidXMan - Fluidic Experimentation Manager");
             primaryStage.setScene(new Scene(fxmlLoader.load(), 1024, 600));
             primaryStage.show();
         } catch (Exception e) {

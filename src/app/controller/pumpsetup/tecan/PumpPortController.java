@@ -22,34 +22,52 @@ public class PumpPortController {
     @FXML private TextField portName;
     @FXML private ComboBox portType;
 
+    private PumpPort pumpPort;
+
     @FXML
     public void initialize() {
     }
 
     public void configure(PumpPort port, int number) {
-        this.portName.setText(port.getPortName());
+        this.pumpPort = port;
 
-        port.portNameProperty().bind(this.portName.textProperty());
+        this.setupControls(number);
 
-        this.portNumber.setText(number+")");
-
-        this.setupControls();
-
-        this.portType.setValue(port.getPortType().getName());
-
-        this.portType.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
-            port.setPortType(PortType.getByName(newVal.toString()));
-        });
+        this.bindModelToControls();
     }
 
-    private void setupControls() {
+    private void setupControls(int number) {
+        this.portNumber.setText(number+")");
+
+        this.portName.setText(this.pumpPort.getPortName());
+
         this.portType.setItems(FXCollections.observableList(
                 Arrays.stream(
                         PortType.values())
-                        .map(p -> p.getName())
+                        .map(PortType::getName)
                         .collect(Collectors.toList())
                 )
         );
+
+        this.portType.setValue(this.pumpPort.getPortType().getName());
+        if (this.portType.getValue() == PortType.EMPTY.getName()) {
+            this.portName.setText("");
+            this.portName.setDisable(true);
+        }
+    }
+
+    private void bindModelToControls() {
+        this.pumpPort.portNameProperty().bind(this.portName.textProperty());
+
+        this.portType.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
+            if (newVal == PortType.EMPTY.getName()) {
+                this.portName.setText("");
+                this.portName.setDisable(true);
+            } else {
+                this.portName.setDisable(false);
+            }
+            this.pumpPort.setPortType(PortType.getByName(newVal.toString()));
+        });
     }
 
 }

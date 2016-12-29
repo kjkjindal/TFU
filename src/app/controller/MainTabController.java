@@ -24,4 +24,8 @@ public class MainTabController {
         return this.protocolController;
     }
 
+    public PumpSetupController getPumpSetupController() {
+        return this.pumpSetupController;
+    }
+
 }
