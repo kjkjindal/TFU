@@ -1,5 +1,7 @@
 package app.model;
 
+import app.model.exceptions.SerialPortInUseException;
+import app.model.exceptions.UnsupportedPortTypeException;
 import gnu.io.*;
 
 import java.io.IOException;
@@ -184,22 +186,6 @@ public class SerialTransport {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static class SerialPortInUseException extends Exception {
-
-        public SerialPortInUseException(String message) {
-            super(message);
-        }
-
-    }
-
-    public class UnsupportedPortTypeException extends Exception {
-
-        public UnsupportedPortTypeException(String message) {
-            super(message);
-        }
-
     }
 
     public static void main(String[] args) {  }

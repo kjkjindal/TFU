@@ -1,6 +1,7 @@
 package app.model.pump.tecanapi;
 
 import app.model.SerialTransport;
+import app.model.exceptions.MaximumAttemptsException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,7 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         }
     }
 
-    private TecanFrameContents sendReceive(String cmd) throws Exception {
+    public TecanFrameContents sendReceive(String cmd) throws MaximumAttemptsException, IOException {
         int attempt = 0;
         TecanFrameContents frameIn = null;
 
@@ -61,7 +62,7 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
             try { TimeUnit.MILLISECONDS.sleep(this.serialMillisTimeout); }
             catch (InterruptedException e) { e.printStackTrace(); }
         }
-        throw new Exception("Maximum serial communication attempts have been reached!");
+        throw new MaximumAttemptsException("Maximum serial communication attempts have been reached!");
     }
 
     private void sendFrame(byte[] frame) throws IOException {
