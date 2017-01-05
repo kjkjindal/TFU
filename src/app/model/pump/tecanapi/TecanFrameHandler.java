@@ -1,9 +1,6 @@
 package app.model.pump.tecanapi;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Project: FluidXMan
@@ -30,7 +27,7 @@ public class TecanFrameHandler {
     private String cmd;
 
     public TecanFrameHandler(int addr) {
-        this.address = Byte.parseByte(Integer.toHexString(addr));
+        this.address = (byte) (addr + 0x31);
     }
 
     public byte[] emitFrame(String cmd) {

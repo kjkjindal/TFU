@@ -51,15 +51,19 @@ public class ProtocolController {
 
     private void drawExperimentTree() {
         TreeItem<ProtocolComponent> root = new TreeItem(this.protocol);
+
         for(Cycle c: this.protocol.getCycleList()) {
             TreeItem<ProtocolComponent> cycleItem = new TreeItem(c);
+
             for(Command cmd: c.getCommands()){
                 TreeItem<ProtocolComponent> commandItem = new TreeItem(cmd);
                 cycleItem.getChildren().add(commandItem);
             }
+
             cycleItem.setExpanded(true);
             root.getChildren().add(cycleItem);
         }
+
         root.setExpanded(true);
         this.protocolTree.setRoot(root);
     }
@@ -116,10 +120,10 @@ public class ProtocolController {
         private ImageView icon;
 
         public ProtocolTreeCell() {
-
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/FXcomponents/protocolTreeCell.fxml")
             );
+
             try {
                 cell = fxmlLoader.load();
                 controls = (HBox) cell.lookup("#controls");

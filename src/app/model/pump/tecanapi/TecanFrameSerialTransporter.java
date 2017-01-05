@@ -1,6 +1,8 @@
 package app.model.pump.tecanapi;
 
-import java.util.HashMap;
+import app.model.SerialTransport;
+
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,6 +16,7 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
     private int serialBaud;
     private int serialMillisTimeout;
     private int maxAttempts;
+    public SerialTransport serialTransport;
 
     public TecanFrameSerialTransporter(int address, String portName, int serialBaud,
                                        int serialMillisTimeout, int maxAttempts) {
@@ -23,11 +26,20 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         this.serialBaud = serialBaud;
         this.serialMillisTimeout = serialMillisTimeout;
         this.maxAttempts = maxAttempts;
+
+        this.serialTransport = new SerialTransport(portName, serialBaud, serialMillisTimeout);
+        try {
+            this.serialTransport.connect();
+        } catch (SerialTransport.UnsupportedPortTypeException e) {
+            e.printStackTrace();
+        } catch (SerialTransport.SerialPortInUseException e) {
+            e.printStackTrace();
+        }
     }
 
-    private byte[] sendReceive(String cmd) throws Exception {
+    private TecanFrameContents sendReceive(String cmd) throws Exception {
         int attempt = 0;
-        byte[] frameIn = null;
+        TecanFrameContents frameIn = null;
 
         while (attempt < this.maxAttempts) {
             attempt++;
@@ -52,29 +64,22 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         throw new Exception("Maximum serial communication attempts have been reached!");
     }
 
-    private void sendFrame(byte[] frame) {
-
+    private void sendFrame(byte[] frame) throws IOException {
+        this.serialTransport.write(frame);
     }
 
-    private byte[] receiveFrame() {
-        return new byte[1];
+    private TecanFrameContents receiveFrame() throws IOException {
+        return this.parseFrame(this.serialTransport.read());
     }
 
-//    public Map<String, > listSerialPorts() {
-//        Map<String, > portMap = new HashMap<>();
-//
-//        ports = CommPortIdentifier.getPortIdentifiers();
-//
-//        while (ports.hasMoreElements())
-//        {
-//            CommPortIdentifier curPort = (CommPortIdentifier)ports.nextElement();
-//
-//            //get only serial ports
-//            if (curPort.getPortType() == CommPortIdentifier.PORT_SERIAL)
-//                portMap.put(curPort.getName(), curPort);
-//
-//        }
-//        return portMap;
-//    }
+    public static void main(String[] args) {
+        TecanFrameSerialTransporter tecan = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial", 9600, 200, 2);
+
+        try {
+            System.out.println(tecan.sendReceive("A0R"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

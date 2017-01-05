@@ -10,6 +10,6 @@ import app.model.protocol.commands.Command;
  */
 public interface DurationStrategy {
 
-    public Integer getDuration(Command cmd, DurationType type);
+    Integer getDuration(Command cmd, DurationType type);
 
 }

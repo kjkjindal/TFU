@@ -6,6 +6,7 @@ package app.model.durationcalculator;
  * Date: 12/23/16
  */
 public enum DurationType {
+    SECONDS,
     MINUTES,
     HOURS
 }

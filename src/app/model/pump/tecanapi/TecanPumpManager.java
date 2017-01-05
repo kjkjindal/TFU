@@ -1,5 +1,8 @@
 package app.model.pump.tecanapi;
 
+import app.model.SerialTransport;
+import gnu.io.CommPortIdentifier;
+
 import java.util.Map;
 
 /**
@@ -16,6 +19,7 @@ public class TecanPumpManager {
     }
 
     private void findTecanPumps() {
+        Map<String, CommPortIdentifier> map = SerialTransport.getSerialPorts();
 
     }
 

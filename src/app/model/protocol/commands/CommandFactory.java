@@ -23,6 +23,15 @@ public class CommandFactory {
             case OneWayCommand:
                 cmd = new OneWayCommand();
                 break;
+            case WaitCommand:
+                cmd = new WaitCommand();
+                break;
+            case EmailCommand:
+                cmd = new EmailCommand();
+                break;
+            case WashSyringeCommand:
+                cmd = new WashSyringeCommand();
+                break;
             default:
                 break;
         }
