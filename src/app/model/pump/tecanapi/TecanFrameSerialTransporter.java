@@ -2,6 +2,8 @@ package app.model.pump.tecanapi;
 
 import app.model.SerialTransport;
 import app.model.exceptions.MaximumAttemptsException;
+import app.model.exceptions.SerialPortInUseException;
+import app.model.exceptions.UnsupportedPortTypeException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -31,9 +33,9 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         this.serialTransport = new SerialTransport(portName, serialBaud, serialMillisTimeout);
         try {
             this.serialTransport.connect();
-        } catch (SerialTransport.UnsupportedPortTypeException e) {
+        } catch (UnsupportedPortTypeException e) {
             e.printStackTrace();
-        } catch (SerialTransport.SerialPortInUseException e) {
+        } catch (SerialPortInUseException e) {
             e.printStackTrace();
         }
     }
