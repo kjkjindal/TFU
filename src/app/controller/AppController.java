@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.model.Saveable;
-import app.model.XMLSaver;
+import app.model.services.xml.XMLSaver;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;

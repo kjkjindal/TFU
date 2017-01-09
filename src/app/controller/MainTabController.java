@@ -2,7 +2,6 @@ package app.controller;
 
 import app.controller.protocol.ProtocolController;
 import app.controller.pumpsetup.PumpSetupController;
-import app.model.pump.PumpManager;
 import javafx.fxml.FXML;
 
 /**

@@ -1,9 +1,8 @@
 package app.controller.pumpsetup;
 
 import app.controller.pumpsetup.tecan.PumpController;
-import app.controller.pumpsetup.tecan.PumpPortController;
-import app.model.pump.Pump;
-import app.model.pump.PumpManager;
+import app.model.devices.pump.Pump;
+import app.model.devices.pump.PumpManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

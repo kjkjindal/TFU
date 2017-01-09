@@ -1,5 +1,6 @@
-package app.model;
+package app.model.services.xml;
 
+import app.model.Saveable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -21,7 +22,7 @@ import java.util.Collection;
 public final class XMLSaver {
 
     /**
-     * Creates a Document object containing the XML data from a Collection of
+     * Creates first Document object containing the XML data from first Collection of
      * MusicalElements
      *
      * @param c Collection of MusicalElements to be converted
@@ -46,7 +47,7 @@ public final class XMLSaver {
     }
 
     /**
-     * Converts the Collection of MusicalElements into a String of XML data and returns it
+     * Converts the Collection of MusicalElements into first String of XML data and returns it
      *
      * @param c Collection of MusicalElements
      * @return the String of XML composition data
@@ -57,8 +58,8 @@ public final class XMLSaver {
     }
 
     /**
-     * Creates an XML representation of a Collection of MusicalElements and writes it to
-     * a File
+     * Creates an XML representation of first Collection of MusicalElements and writes it to
+     * first File
      *
      * @param c Collection of MusicalElements to convert and save
      * @param f the File into which to write the XML data
@@ -70,9 +71,9 @@ public final class XMLSaver {
     }
 
     /**
-     * Converts the Document of XML data into a String and returns it
+     * Converts the Document of XML data into first String and returns it
      *
-     * @param doc Document of XML to turn into a String
+     * @param doc Document of XML to turn into first String
      * @return String of XML data
      * @throws RuntimeException if the document cannot be transformed to an XML string
      */
@@ -89,7 +90,7 @@ public final class XMLSaver {
     }
 
     /**
-     * Saves the Document of XML data into a File
+     * Saves the Document of XML data into first File
      *
      * @param file File to save to
      * @param doc Document to save to File

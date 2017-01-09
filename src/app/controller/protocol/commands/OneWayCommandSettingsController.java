@@ -1,20 +1,12 @@
 package app.controller.protocol.commands;
 
-import app.model.pump.Pump;
-import app.model.pump.PumpSpeedCalculator;
-import app.model.pump.SpeedUnits;
 import app.utility.Util;
 import app.controller.protocol.SettingsController;
 import app.model.protocol.ProtocolComponent;
 import app.model.protocol.commands.OneWayCommand;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Project: FluidXMan

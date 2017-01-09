@@ -2,8 +2,8 @@ package app.model.protocol.commands;
 
 import app.model.Logger;
 import app.model.protocol.Status;
-import app.model.pump.Pump;
-import app.model.pump.PumpPort;
+import app.model.devices.pump.Pump;
+import app.model.devices.pump.PumpPort;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;

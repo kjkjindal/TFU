@@ -1,7 +1,5 @@
-package app.model;
+package app.model.services.serial;
 
-import app.model.exceptions.SerialPortInUseException;
-import app.model.exceptions.UnsupportedPortTypeException;
 import gnu.io.*;
 
 import java.io.IOException;
@@ -17,8 +15,8 @@ public class SerialTransport {
 
     private InputStream in = null;
     private OutputStream out = null;
-    private SerialPort serialPort;
-    private boolean isConnected;
+    private SerialPort serialPort = null;
+    private boolean isConnected = false;
 
     public SerialTransport(String portName, int serialBaud, int serialMillisTimeout) {
         this.portName = portName;

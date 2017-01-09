@@ -1,6 +1,6 @@
 package app.model.protocol.commands;
 
-import app.model.pump.PumpManager;
+import app.model.devices.pump.PumpManager;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
@@ -51,7 +51,7 @@ public class CommandFactory {
                 cmd.setVolume(Integer.valueOf(attributes.getNamedItem("volume").getNodeValue()));
                 cmd.setExtractSpeed(Integer.valueOf(attributes.getNamedItem("extractSpeed").getNodeValue()));
                 cmd.setDispenseSpeed(Integer.valueOf(attributes.getNamedItem("dispenseSpeed").getNodeValue()));
-//                TODO: create a way to set/get pump objects by name
+//                TODO: create first way to set/get pump objects by name
 //                cmd.setPump(attributes.getNamedItem("pump").getNodeValue());
 //                cmd.setFromPort(attributes.getNamedItem("fromPort").getNodeValue());
 //                cmd.setToPort(attributes.getNamedItem("toPort").getNodeValue());

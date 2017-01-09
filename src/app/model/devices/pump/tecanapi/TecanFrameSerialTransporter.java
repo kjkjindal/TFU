@@ -1,9 +1,8 @@
-package app.model.pump.tecanapi;
+package app.model.devices.pump.tecanapi;
 
-import app.model.SerialTransport;
-import app.model.exceptions.MaximumAttemptsException;
-import app.model.exceptions.SerialPortInUseException;
-import app.model.exceptions.UnsupportedPortTypeException;
+import app.model.services.serial.SerialTransport;
+import app.model.services.serial.SerialPortInUseException;
+import app.model.services.serial.UnsupportedPortTypeException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

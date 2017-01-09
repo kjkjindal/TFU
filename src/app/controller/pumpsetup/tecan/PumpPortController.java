@@ -1,7 +1,7 @@
 package app.controller.pumpsetup.tecan;
 
-import app.model.pump.PortType;
-import app.model.pump.PumpPort;
+import app.model.devices.pump.PortType;
+import app.model.devices.pump.PumpPort;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;

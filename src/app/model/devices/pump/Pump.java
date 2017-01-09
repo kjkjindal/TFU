@@ -1,4 +1,4 @@
-package app.model.pump;
+package app.model.devices.pump;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

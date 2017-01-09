@@ -1,6 +1,6 @@
-package app.model.pump.tecanapi;
+package app.model.devices.pump.tecanapi;
 
-import app.model.SerialTransport;
+import app.model.services.serial.SerialTransport;
 import gnu.io.CommPortIdentifier;
 
 import java.util.Map;

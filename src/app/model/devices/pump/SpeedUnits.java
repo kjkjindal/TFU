@@ -1,4 +1,4 @@
-package app.model.pump;
+package app.model.devices.pump;
 
 /**
  * Project: FluidXMan

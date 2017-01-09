@@ -5,6 +5,7 @@ import javafx.scene.control.TextField;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.IntConsumer;
 
 /**
@@ -42,6 +43,14 @@ public class Util {
         List<T> list = new ArrayList<T>(c);
         java.util.Collections.sort(list);
         return list;
+    }
+
+    public static void sleep(int timeMillis) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

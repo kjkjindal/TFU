@@ -1,4 +1,4 @@
-package app.model.pump.tecanapi;
+package app.model.devices.pump.tecanapi;
 
 import java.util.*;
 
@@ -144,7 +144,7 @@ public class TecanFrameHandler {
     }
 
     public static void main(String[] args) {
-        TecanFrameHandler api = new TecanFrameHandler(0);
+        TecanFrameHandler tecanFrameHandler = new TecanFrameHandler(0);
 
         List<Byte> frame = new ArrayList<>();
         // 45, 78, 98, 56, 57
@@ -154,57 +154,53 @@ public class TecanFrameHandler {
         frame.add((byte) 56);
         frame.add((byte) 57);
 
-//        System.out.println("full frame: "+frame);
-//
-//        System.out.println(api.verifyChecksum(frame));
-
-        byte[] frame2 = api.emitFrame("?76");
+        byte[] frame2 = tecanFrameHandler.emitFrame("?76");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?72");
+        frame2 = tecanFrameHandler.emitFrame("?72");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        frame2 = api.emitFrame("?79");
+        frame2 = tecanFrameHandler.emitFrame("?79");
 
         System.out.println(Arrays.toString(frame2));
 
-        String str = new String(api.parseFrame(frame2).getData());
+        String str = new String(tecanFrameHandler.parseFrame(frame2).getData());
         System.out.println(str);
-        System.out.println(api.parseFrame(frame2).getStatusByte());
+        System.out.println(tecanFrameHandler.parseFrame(frame2).getStatusByte());
     }
 
 }

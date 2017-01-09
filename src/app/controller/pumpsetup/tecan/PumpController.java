@@ -1,7 +1,7 @@
 package app.controller.pumpsetup.tecan;
 
 import app.utility.Util;
-import app.model.pump.Pump;
+import app.model.devices.pump.Pump;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
