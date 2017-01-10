@@ -1,13 +1,15 @@
 package app.model.services.serial;
 
+import app.utility.Util;
 import gnu.io.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 
-public class SerialTransport {
+public class SerialTransport implements SerialPortEventListener{
 
     private String portName = "";
     private int serialBaud = 9600;
@@ -18,11 +20,15 @@ public class SerialTransport {
     private SerialPort serialPort = null;
     private boolean isConnected = false;
 
+    private SerialReader reader;
+    private Queue<Byte> byteQueue;
+
     public SerialTransport(String portName, int serialBaud, int serialMillisTimeout) {
         this.portName = portName;
         this.serialBaud = serialBaud;
         this.serialMillisTimeout = serialMillisTimeout;
         this.isConnected = false;
+        this.byteQueue = new LinkedTransferQueue<>();
     }
 
     public static Map<String, CommPortIdentifier> getSerialPorts() {
@@ -83,15 +89,17 @@ public class SerialTransport {
                             SerialPort.PARITY_NONE
                     );
 
-                    serialPort.disableReceiveTimeout();
-                    serialPort.enableReceiveThreshold(1);
+//                    serialPort.disableReceiveTimeout();
+//                    serialPort.enableReceiveThreshold(1);
 
                     this.in = this.serialPort.getInputStream();
                     this.out = this.serialPort.getOutputStream();
 
                     this.isConnected = true;
 
-//                (new Thread(new SerialReader(this.in))).start();
+//                    this.initListener();
+                this.reader = new SerialReader(this.in, this.byteQueue);
+                new Thread(reader).start();
 //                (new Thread(new SerialWriter(this.out))).start();
 
                 } else { throw new UnsupportedPortTypeException("Error: Only serial ports are handled by this example"); }
@@ -105,41 +113,114 @@ public class SerialTransport {
         } catch (PortInUseException e) {
             e.printStackTrace();
         }
+//        catch (TooManyListenersException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public void initListener() throws TooManyListenersException {
+        try
+        {
+            System.out.println("In initListener()");
+            serialPort.addEventListener(this);
+            serialPort.notifyOnDataAvailable(true);
+        }
+        catch (TooManyListenersException e)
+        {
+            throw new TooManyListenersException("Too many listenders!");
+        }
     }
 
     public void disconnect() throws IOException {
         try {
             if (this.isConnected) {
-                this.serialPort.close();
-                this.in.close();
+                this.reader.stop();
+                this.out.flush();
                 this.out.close();
-
+                this.in.close();
+                this.serialPort.removeEventListener();
+                this.serialPort.close();
                 System.out.println("DISCONNECTED from: " + this.serialPort.getName());
+
+                this.isConnected = false;
             }
-        } catch (IOException e) { throw new IOException("Failed to close " + this.serialPort.getName(), e); }
+        } catch (IOException e) { System.out.println("Failed to close " + this.serialPort.getName()); }
     }
 
-    public byte[] read() throws IOException {
-        if (this.isConnected) {
-            byte[] buffer = new byte[1024];
+    public void serialEvent(SerialPortEvent evt) {
+        if (evt.getEventType() == SerialPortEvent.DATA_AVAILABLE)
+        {
+            System.out.println("In serialEvent()");
+            this.byteQueue.clear();
+            byte[] buffer = new byte[1];
             int len = -1;
 
             try {
                 while ((len = this.in.read(buffer)) > -1) {
-                    System.out.print(new String(buffer, 0, len));
+                    String str = new String(buffer, 0, len);
+//                    byte[] b = str.getBytes();
+//
+//                    System.out.print(str);
+//                    System.out.print("\tb-len: "+b.length);
+//                    System.out.print("\tb: "+str.length());
+//                    System.out.println("\tchar: "+ (char) b[0]);
+//
+//                    this.byteQueue.add((byte) (char)b[0]);
+                    this.byteQueue.add(buffer[0]);
                 }
             } catch (IOException e) { e.printStackTrace(); }
 
-            return buffer;
+            System.out.println("q: " + this.byteQueue);
 
-        } else { throw new IOException("Cannot read from serial port "+ this.portName +" Not connected"); }
+        }
+    }
+
+    public byte[] read() throws IOException {
+        Util.sleep(300);
+        if (this.byteQueue.size() > 0) {
+            System.out.println("q = " + this.byteQueue.size());
+
+            byte[] frame = new byte[this.byteQueue.size()];
+
+            for(int i = 0; i < frame.length; i++)
+                frame[i] = this.byteQueue.remove();
+
+            System.out.println("frame = "+Arrays.toString(frame));
+
+            return frame;
+        } else {
+            System.out.println("q = 0");
+            return null;
+        }
+
+//        if (this.isConnected) {
+//            System.out.println("In read()");
+//            byte[] buffer = new byte[1024];
+//            int len = -1;
+//
+//            try {
+//                while ((len = this.in.read(buffer)) > -1) {
+//                    System.out.print(new String(buffer, 0, len));
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+////            this.byteQueue.add(buffer);
+////            System.out.println("q: " + this.byteQueue);
+//
+//            return buffer;
+//        } else {
+//            throw new IOException("Cannot write to serial port "+ this.portName);
+//        }
     }
 
     public void write(byte[] frame) throws IOException {
         if (isConnected) {
             try {
-                System.out.println("Writing: " + Arrays.toString(frame));
                 this.out.write(frame);
+                System.out.println("Writing byte[]: " + Arrays.toString(frame));
+                System.out.println("Writing string: " + new String(frame));
 //                this.out.flush();
             } catch (IOException e) { throw new IOException(e); }
         } else { throw new IOException("Cannot write to serial port "+ this.portName +" Not connected"); }
@@ -147,23 +228,60 @@ public class SerialTransport {
 
     public static class SerialReader implements Runnable {
 
-        InputStream in;
+        private InputStream in;
+        private Queue<Byte> queue;
+        private boolean reading;
 
-        public SerialReader(InputStream in) {
+        public SerialReader(InputStream in, Queue<Byte> queue) {
             this.in = in;
+            this.queue = queue;
         }
 
         public void run() {
+//            byte[] buffer = new byte[1024];
+//            int len = -1;
+//            try {
+//                while((len = this.in.read(buffer)) > -1) {
+//                    System.out.print(new String(buffer, 0, len));
+//                }
+//            } catch(IOException e) {
+//                e.printStackTrace();
+//            }
+
+            this.reading = true;
+//            byte[] buffer = new byte[1024];
+//            int len = -1;
+//            try {
+//                while((len = this.in.read(buffer)) > -1) {
+//                    System.out.print(new String(buffer, 0, len));
+//                }
+//                this.queue.add(buffer);
+//            } catch(IOException e) {
+//                e.printStackTrace();
+//            }
+
             byte[] buffer = new byte[1024];
             int len = -1;
-            try {
-                while((len = this.in.read(buffer)) > -1) {
-                    System.out.print(new String(buffer, 0, len));
+
+            while (reading) {
+                System.out.println("readin");
+                try {
+                    if ((len = this.in.read(buffer)) != -1) {
+//                        System.out.print(new String(buffer, 0, len));
+
+                        this.queue.add(buffer[0]);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch(IOException e) {
-                e.printStackTrace();
             }
         }
+
+        public void stop() {
+            System.out.println("in stop()");
+            this.reading = false;
+        }
+
     }
 
     public static class SerialWriter implements Runnable {

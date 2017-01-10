@@ -43,18 +43,21 @@ public class TecanPump {
         this.ready = false;
     }
 
-    protected Tuple<byte [], Integer> sendReceive(String cmd) throws IOException, MaximumAttemptsException, SyringeCommandException {
+    protected Tuple<String, Integer> sendReceive(String cmd) throws IOException, MaximumAttemptsException, SyringeCommandException {
         TecanFrameContents frameContents = this.serialTransporter.sendReceive(cmd);
 
         int ready = this.checkStatus(frameContents.getStatusByte()).first;
 
-        byte[] data = frameContents.getData();
+        String data = frameContents.getData();
 
-        return new Tuple<byte[], Integer>(data, ready);
+        return new Tuple<String, Integer>(data, ready);
     }
 
     private Tuple<Integer, Integer> checkStatus(byte status) throws SyringeCommandException {
-        String statusBits = Integer.toBinaryString(status);
+        System.out.println("statusByte: "+status);
+        //TODO move to serialtransporter
+        String statusBits = String.format("%8s", Integer.toBinaryString(status)).replace(' ', '0');
+        System.out.println("statusBits: "+statusBits);
         int errorCode = Integer.parseInt(statusBits.substring(4, 8));
         int ready = Integer.parseInt(statusBits.substring(2,3));
 

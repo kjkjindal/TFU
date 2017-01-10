@@ -5,6 +5,7 @@ import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,16 +37,16 @@ public class TecanXCalibur extends TecanPump {
     private static final Map<Integer, Integer> SPEED_CODES;
     static {
         Map<Integer, Integer> map = new HashMap<>();
-        map.put(0, 6000);   map.put(1, 5600);   map.put(2, 5000);   map.put(3, 4400);
-        map.put(4, 3800);   map.put(5, 3200);   map.put(6, 2600);   map.put(7, 2200);
-        map.put(8, 2000);   map.put(9, 1800);   map.put(10, 1600);  map.put(11, 1400);
-        map.put(12, 1200);  map.put(13, 1000);  map.put(14, 800);   map.put(15, 600);
-        map.put(16, 400);   map.put(17, 200);   map.put(18, 190);   map.put(19, 180);
-        map.put(20, 170);   map.put(21, 160);   map.put(22, 150);   map.put(23, 140);
-        map.put(24, 130);   map.put(25, 120);   map.put(26, 110);   map.put(27, 100);
-        map.put(28, 90);    map.put(29, 80);    map.put(30, 70);    map.put(31, 60);
-        map.put(32, 50);    map.put(33, 40);    map.put(34, 30);    map.put(35, 20);
-        map.put(36, 18);    map.put(37, 16);    map.put(38, 14);    map.put(39, 12);
+        map.put(0,  6000);   map.put(1,  5600);   map.put(2,  5000);   map.put(3,  4400);
+        map.put(4,  3800);   map.put(5,  3200);   map.put(6,  2600);   map.put(7,  2200);
+        map.put(8,  2000);   map.put(9,  1800);   map.put(10, 1600);   map.put(11, 1400);
+        map.put(12, 1200);   map.put(13, 1000);   map.put(14, 800);    map.put(15, 600);
+        map.put(16, 400);    map.put(17, 200);    map.put(18, 190);    map.put(19, 180);
+        map.put(20, 170);    map.put(21, 160);    map.put(22, 150);    map.put(23, 140);
+        map.put(24, 130);    map.put(25, 120);    map.put(26, 110);    map.put(27, 100);
+        map.put(28, 90);     map.put(29, 80);     map.put(30, 70);     map.put(31, 60);
+        map.put(32, 50);     map.put(33, 40);     map.put(34, 30);     map.put(35, 20);
+        map.put(36, 18);     map.put(37, 16);     map.put(38, 14);     map.put(39, 12);
         map.put(40, 10);
         SPEED_CODES = Collections.unmodifiableMap(map);
     }
@@ -56,7 +57,7 @@ public class TecanXCalibur extends TecanPump {
     private int initForce = 0;
     private boolean microstep = true;
 
-    private String lastCmd;
+    private String lastCmd = "";
     private String cmdChain = "";
     private int execTime = 0;
     private boolean simSpeedChange = false;
@@ -64,7 +65,7 @@ public class TecanXCalibur extends TecanPump {
     private Map state;
     private Map simState;
 
-    private boolean debug;
+    private boolean debug = false;
 
     private int cachedStartSpeed;
     private int cachedTopSpeed;
@@ -86,6 +87,10 @@ public class TecanXCalibur extends TecanPump {
 
         this.simState = new HashMap(this.state);
 
+//        this.init();
+//
+//        this.getConfig();
+
         this.setMicrostep(true);
 
         this.updateSpeeds();
@@ -99,8 +104,8 @@ public class TecanXCalibur extends TecanPump {
     //                                Pump Initialization
     //************************************************************************************
 
-    private int init() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
-        String cmd = String.format("%s$d,$d,%d", this.direction.getCmd(), this.initForce, 0, this.wastePort);
+    public int init() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+        String cmd = String.format("%s%d,%d,%d", this.direction.getCmd(), this.initForce, 0, this.wastePort);
         this.sendReceive(cmd, true);
         this.waitReady(300, 10000, 0);
 
@@ -393,12 +398,17 @@ public class TecanXCalibur extends TecanPump {
         this.getCutoffSpeed();
     }
 
+    private String getConfig() throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
+        String cmd = "&";
+
+        return this.sendReceive(cmd, false);
+    }
+
     private int getPlungerPosition() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         this.state.put("plungerPosition", value);
 
@@ -407,10 +417,9 @@ public class TecanXCalibur extends TecanPump {
 
     private int getStartSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?1";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         this.state.put("startSpeed", value);
 
@@ -419,10 +428,9 @@ public class TecanXCalibur extends TecanPump {
 
     private int getTopSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?2";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         this.state.put("topSpeed", value);
 
@@ -431,10 +439,9 @@ public class TecanXCalibur extends TecanPump {
 
     private int getCutoffSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?3";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         this.state.put("cutoffSpeed", value);
 
@@ -443,20 +450,18 @@ public class TecanXCalibur extends TecanPump {
 
     private int getEncoderPosition() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?4";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         return value;
     }
 
     private int getCurrentPort() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?6";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         this.state.put("valvePort", value);
         return (int) this.state.get("valvePort");
@@ -464,10 +469,9 @@ public class TecanXCalibur extends TecanPump {
 
     private int getBufferStatus() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?10";
-        byte[] data = this.sendReceive(cmd, false);
+        String data = this.sendReceive(cmd, false);
 
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
+        int value = Integer.parseInt(data);
 
         return value;
     }
@@ -496,7 +500,7 @@ public class TecanXCalibur extends TecanPump {
     //                                Control commands
     //************************************************************************************
 
-    private byte[] terminateCmd() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    private String terminateCmd() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "T";
         return this.sendReceive(cmd, true);
     }
@@ -551,22 +555,21 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private byte[] sendReceive(String cmd, boolean execute) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    private String sendReceive(String cmd, boolean execute) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         if (execute)
             cmd += "R";
 
         this.lastCmd = cmd;
 
         try {
-            byte[] response = super.sendReceive(cmd).first;
 
-            return response;
+            return super.sendReceive(cmd).first;
 
         } catch (SyringeCommandException e) {
             this.handleSyringeExceptions(e);
         }
 
-        return null;
+        return "";
     }
 
     private int getPlungerMoveDuration(int steps) {
@@ -628,10 +631,25 @@ public class TecanXCalibur extends TecanPump {
 
 
     public static void main(String[] args) {
-        byte[] data = {0xf, 0xf, 0xf, 0xf};
-        ByteBuffer wrapped = ByteBuffer.wrap(data);
-        int value = wrapped.getInt();
-        System.out.println(value);
+        try {
+
+            TecanFrameSerialTransporter transport = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial", 9600, 200, 2);
+
+            TecanXCalibur pump = new TecanXCalibur(transport, false);
+
+//            pump.init();
+
+            transport.disconnect();
+
+        } catch (SyringeCommandException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (MaximumAttemptsException e) {
+            e.printStackTrace();
+        } catch (SyringeTimeoutException e) {
+            e.printStackTrace();
+        }
     }
 
 }

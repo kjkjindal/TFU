@@ -8,18 +8,18 @@ package app.model.devices.pump.tecanapi;
 public class TecanFrameContents {
 
     private byte statusByte;
-    private byte[] data;
+    private String data;
 
-    public TecanFrameContents(byte statusByte, byte[] data) {
+    public TecanFrameContents(byte statusByte, char[] data) {
         this.statusByte = statusByte;
-        this.data = data;
+        this.data = (data != null) ? new String(data) : "";
     }
 
     public byte getStatusByte() { return statusByte; }
 
     public void setStatusByte(byte statusByte) { this.statusByte = statusByte; }
 
-    public byte[] getData() { return data; }
+    public String getData() { return data; }
 
-    public void setData(byte[] data) { this.data = data; }
+    public void setData(String data) { this.data = data; }
 }

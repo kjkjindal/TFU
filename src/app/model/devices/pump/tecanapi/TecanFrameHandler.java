@@ -58,11 +58,11 @@ public class TecanFrameHandler {
         if (!this.verifyChecksum(frame))
             return null;
 
-        byte[] data = new byte[lenData];
+        char[] data = new char[lenData];
 
         if (lenData > 0) {
             for (int i = 0; i < lenData; i++)
-                data[i] = frameList.get(3+i);
+                data[i] = (char) frameList.get(4+i).byteValue();
         } else {
             data = null;
         }

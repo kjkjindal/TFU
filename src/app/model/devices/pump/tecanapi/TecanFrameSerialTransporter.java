@@ -5,6 +5,8 @@ import app.model.services.serial.SerialPortInUseException;
 import app.model.services.serial.UnsupportedPortTypeException;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -78,10 +80,18 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         TecanFrameSerialTransporter tecan = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial", 9600, 200, 2);
 
         try {
-            System.out.println(tecan.sendReceive("A0R"));
+            System.out.println((char) 49);
+            System.out.println(tecan.sendReceive("?76").getData());
+            System.out.println(tecan.sendReceive("N0A3000R").getData());
+
+            tecan.serialTransport.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void disconnect() throws IOException {
+        this.serialTransport.disconnect();
     }
 
 }
