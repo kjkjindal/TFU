@@ -70,12 +70,15 @@ public class SerialTransport implements SerialPortEventListener{
 //        return h;
 //    }
 
-    public void connect() throws UnsupportedPortTypeException, SerialPortInUseException {
+    public void connect() throws IOException {
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(this.portName);
 
             if (!portIdentifier.isCurrentlyOwned()) {
-                CommPort commPort = portIdentifier.open(this.getClass().getName(), this.serialMillisTimeout);
+
+                System.out.println("isCurrentlyOwned() = " + portIdentifier.isCurrentlyOwned());
+
+                CommPort commPort = portIdentifier.open("FluidXMan", this.serialMillisTimeout);
 
                 if (commPort instanceof SerialPort) {
                     this.serialPort = (SerialPort) commPort;
@@ -89,36 +92,34 @@ public class SerialTransport implements SerialPortEventListener{
                             SerialPort.PARITY_NONE
                     );
 
-//                    serialPort.disableReceiveTimeout();
-//                    serialPort.enableReceiveThreshold(1);
+                    serialPort.disableReceiveTimeout();
+                    serialPort.enableReceiveThreshold(1);
 
                     this.in = this.serialPort.getInputStream();
                     this.out = this.serialPort.getOutputStream();
 
                     this.isConnected = true;
 
-//                    this.initListener();
-                this.reader = new SerialReader(this.in, this.byteQueue);
-                new Thread(reader).start();
+                    this.initListener();
+//                this.reader = new SerialReader(this.in, this.byteQueue);
+//                new Thread(reader).start();
 //                (new Thread(new SerialWriter(this.out))).start();
 
                 } else { throw new UnsupportedPortTypeException("Error: Only serial ports are handled by this example"); }
             } else { throw new SerialPortInUseException("Error: Port is currently in use"); }
-        } catch (UnsupportedCommOperationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchPortException e) {
-            e.printStackTrace();
+        } catch (UnsupportedCommOperationException | NoSuchPortException | IOException | SerialPortInUseException | UnsupportedPortTypeException e) {
+            throw new IOException(e);
         } catch (PortInUseException e) {
+//            throw new IOException(e);
             e.printStackTrace();
+            System.exit(0);
         }
 //        catch (TooManyListenersException e) {
 //            e.printStackTrace();
 //        }
     }
 
-    public void initListener() throws TooManyListenersException {
+    public void initListener() {
         try
         {
             System.out.println("In initListener()");
@@ -127,22 +128,24 @@ public class SerialTransport implements SerialPortEventListener{
         }
         catch (TooManyListenersException e)
         {
-            throw new TooManyListenersException("Too many listenders!");
+            System.out.println("Too many listenders!");
         }
     }
 
     public void disconnect() throws IOException {
         try {
             if (this.isConnected) {
-                this.reader.stop();
+//                this.reader.stop();
                 this.out.flush();
                 this.out.close();
                 this.in.close();
                 this.serialPort.removeEventListener();
-                this.serialPort.close();
-                System.out.println("DISCONNECTED from: " + this.serialPort.getName());
+
+//                this.serialPort.close();
 
                 this.isConnected = false;
+
+                System.out.println("DISCONNECTED from: " + this.serialPort.getName());
             }
         } catch (IOException e) { System.out.println("Failed to close " + this.serialPort.getName()); }
     }
@@ -151,34 +154,45 @@ public class SerialTransport implements SerialPortEventListener{
         if (evt.getEventType() == SerialPortEvent.DATA_AVAILABLE)
         {
             System.out.println("In serialEvent()");
-            this.byteQueue.clear();
-            byte[] buffer = new byte[1];
+//            this.byteQueue.clear();
+//            byte[] buffer = new byte[1];
+//            int len = -1;
+//
+//            try {
+//                while ((len = this.in.read(buffer)) > -1) {
+//                    String str = new String(buffer, 0, len);
+////                    byte[] b = str.getBytes();
+////
+////                    System.out.print(str);
+////                    System.out.print("\tb-len: "+b.length);
+////                    System.out.print("\tb: "+str.length());
+////                    System.out.println("\tchar: "+ (char) b[0]);
+////
+////                    this.byteQueue.add((byte) (char)b[0]);
+//                    this.byteQueue.add(buffer[0]);
+//                }
+//            } catch (IOException e) { e.printStackTrace(); }
+//
+//            System.out.println("q: " + this.byteQueue);
+
+            byte[] buffer = new byte[1024];
             int len = -1;
 
             try {
-                while ((len = this.in.read(buffer)) > -1) {
-                    String str = new String(buffer, 0, len);
-//                    byte[] b = str.getBytes();
-//
-//                    System.out.print(str);
-//                    System.out.print("\tb-len: "+b.length);
-//                    System.out.print("\tb: "+str.length());
-//                    System.out.println("\tchar: "+ (char) b[0]);
-//
-//                    this.byteQueue.add((byte) (char)b[0]);
+                len = this.in.read(buffer);
+
+                while (len != -1) {
                     this.byteQueue.add(buffer[0]);
+                    len = this.in.read(buffer);
                 }
             } catch (IOException e) { e.printStackTrace(); }
-
-            System.out.println("q: " + this.byteQueue);
 
         }
     }
 
     public byte[] read() throws IOException {
-        Util.sleep(300);
+        Util.sleep(100);
         if (this.byteQueue.size() > 0) {
-            System.out.println("q = " + this.byteQueue.size());
 
             byte[] frame = new byte[this.byteQueue.size()];
 
@@ -189,7 +203,6 @@ public class SerialTransport implements SerialPortEventListener{
 
             return frame;
         } else {
-            System.out.println("q = 0");
             return null;
         }
 
@@ -214,6 +227,21 @@ public class SerialTransport implements SerialPortEventListener{
 //            throw new IOException("Cannot write to serial port "+ this.portName);
 //        }
     }
+
+//    public byte[] readNonblocking(Queue queue) {
+//        byte[] buffer = new byte[1024];
+//        int len = -1;
+//
+//        try {
+//            len = this.in.read(buffer);
+//
+//            while (len != -1) {
+//                queue.add(buffer[0]);
+//                len = this.in.read(buffer);
+//            }
+//        } catch (IOException e) { e.printStackTrace(); }
+//
+//    }
 
     public void write(byte[] frame) throws IOException {
         if (isConnected) {

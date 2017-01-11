@@ -1,6 +1,7 @@
 package app.model.devices.pump.tecanapi;
 
 import app.utility.Util;
+import jdk.nashorn.internal.runtime.Source;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 
 import java.io.IOException;
@@ -132,17 +133,22 @@ public class TecanXCalibur extends TecanPump {
     //                                Command chain methods
     //************************************************************************************
 
-    private int executeChain() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public double executeChain() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+
         long tic = System.currentTimeMillis();
 
         this.sendReceive(this.cmdChain, true);
-        int execTime = this.execTime;
+        double execTime = this.execTime;
         Util.sleep(200);
         this.resetChain(true, false);
 
         long toc = System.currentTimeMillis();
 
-        int waitTime = execTime - ((int) (toc-tic));
+//        double waitTime = execTime*1000 - ((int) (toc-tic));
+        double waitTime = execTime*1000;
+        System.out.println("TOC-TIC: " + ((int) (toc-tic)));
+        System.out.println("EXEC TIME: " + execTime);
+        System.out.println("WAIT TIME: " + waitTime);
 
         if (waitTime < 0)
             waitTime = 0;
@@ -150,7 +156,7 @@ public class TecanXCalibur extends TecanPump {
         return waitTime;
     }
 
-    private void resetChain(boolean onExecute, boolean minReset) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public void resetChain(boolean onExecute, boolean minReset) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         this.cmdChain = "";
         this.execTime = 0;
 
@@ -202,16 +208,16 @@ public class TecanXCalibur extends TecanPump {
     //                                Chainable high-level
     //************************************************************************************
 
-    private void extract(int fromPort, int volume) {
+    public void extract(int fromPort, int volume) {
         int steps = this.ulToSteps(volume);
         this.changePort(fromPort, 0);
         this.movePlungerRelative(steps);
     }
 
-    private void dispense(int toPort, int volume) {
+    public void dispense(int toPort, int volume) {
         int steps = this.ulToSteps(volume);
         this.changePort(toPort, 0);
-        this.movePlungerRelative(-steps);
+        this.movePlungerRelative(-1 * steps);
     }
 
     //</editor-fold>
@@ -223,10 +229,12 @@ public class TecanXCalibur extends TecanPump {
     //                                Chainable low-level
     //************************************************************************************
 
-    private void changePort(int toPort, int fromPort) {
+    public void changePort(int toPort, int fromPort) {
         if (0 < toPort && toPort <= this.numPorts) {
-            if (fromPort == 0)
+            if (fromPort == 0) {
                 fromPort = (this.simState.get("valvePort") != null) ? (int) this.simState.get("valvePort") : 1;
+                System.out.println("fromport = " + fromPort);
+            }
 
             int delta = toPort - fromPort;
             int diff = (Math.abs(delta) >= 7) ? -1 * delta : delta;
@@ -236,13 +244,13 @@ public class TecanXCalibur extends TecanPump {
 
             this.simState.put("valvePort", toPort);
             this.cmdChain += cmd;
-//            this.execTime += 0.2;
+            this.execTime += 0.2;
         } else {
             throw new ValueException("'To port' must be in the range 1 - "+this.numPorts);
         }
     }
 
-    private void movePlungerAbsolute(int position) {
+    public void movePlungerAbsolute(int position) {
         if ((boolean) this.simState.get("microstep"))
             if (!(0 <= position && position <= 24000))
                 throw new ValueException("'Position' must be in the range 0 - 24000");
@@ -258,9 +266,10 @@ public class TecanXCalibur extends TecanPump {
         this.cmdChain += cmd;
 
         this.execTime += this.getPlungerMoveDuration(Math.abs(delta));
+        System.out.println("CALCULATED: " + this.getPlungerMoveDuration(Math.abs(delta)));
     }
 
-    private void movePlungerRelative(int position) {
+    public void movePlungerRelative(int position) {
         String cmd = (position < 0) ? String.format("D%d", Math.abs(position)) : String.format("P%d", position);
         this.simState.put("plungerPosition", (int) this.simState.get("plungerPosition") + position);
 
@@ -277,7 +286,7 @@ public class TecanXCalibur extends TecanPump {
     //                                Command set commands
     //************************************************************************************
 
-    private void setSpeed(int speedCode) {
+    public void setSpeed(int speedCode) {
         if (0 <= speedCode && speedCode <= 40) {
             String cmd = String.format("S%d", speedCode);
 
@@ -290,7 +299,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void setStartSpeed(int pulsesPerSec) {
+    public void setStartSpeed(int pulsesPerSec) {
         if (50 <= pulsesPerSec && pulsesPerSec <= 1000) {
             String cmd = String.format("v%d", pulsesPerSec);
 
@@ -302,7 +311,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void setTopSpeed(int pulsesPerSec) {
+    public void setTopSpeed(int pulsesPerSec) {
         if (5 <= pulsesPerSec && pulsesPerSec <= 6000) {
             String cmd = String.format("V%d", pulsesPerSec);
 
@@ -314,7 +323,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void setCutoffSpeed(int pulsesPerSec) {
+    public void setCutoffSpeed(int pulsesPerSec) {
         if (50 <= pulsesPerSec && pulsesPerSec <= 2700) {
             String cmd = String.format("c%d", pulsesPerSec);
 
@@ -326,7 +335,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void setSlope(int slopeCode) {
+    public void setSlope(int slopeCode) {
         if (1 <= slopeCode && slopeCode <= 20) {
             String cmd = String.format("L%d", slopeCode);
 
@@ -338,7 +347,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void repeatCmdSeq(int numRepeats) {
+    public void repeatCmdSeq(int numRepeats) {
         if (0 <= numRepeats && numRepeats <= 30000) {
             String cmd = String.format("G%d", numRepeats);
 
@@ -350,13 +359,13 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void markRepeatStart() {
+    public void markRepeatStart() {
         String cmd = "g";
 
         this.cmdChain += cmd;
     }
 
-    private void delayExecution(int msDelay) {
+    public void delayExecution(int msDelay) {
         if (0 < msDelay && msDelay < 30000) {
             String cmd = String.format("M%d", msDelay);
 
@@ -366,7 +375,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void haltExecution(int inputPin) throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
+    public void haltExecution(int inputPin) throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
         if (0 <= inputPin && inputPin <= 2) {
             String cmd = String.format("H%d", inputPin);
 
@@ -376,7 +385,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void terminateExecution() throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
+    public void terminateExecution() throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
         String cmd = "T";
 
         this.sendReceive(cmd, false);
@@ -398,13 +407,13 @@ public class TecanXCalibur extends TecanPump {
         this.getCutoffSpeed();
     }
 
-    private String getConfig() throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
+    public String getConfig() throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
         String cmd = "&";
 
         return this.sendReceive(cmd, false);
     }
 
-    private int getPlungerPosition() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getPlungerPosition() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?";
         String data = this.sendReceive(cmd, false);
 
@@ -415,7 +424,7 @@ public class TecanXCalibur extends TecanPump {
         return (int) this.state.get("plungerPosition");
     }
 
-    private int getStartSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getStartSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?1";
         String data = this.sendReceive(cmd, false);
 
@@ -426,7 +435,7 @@ public class TecanXCalibur extends TecanPump {
         return (int) this.state.get("startSpeed");
     }
 
-    private int getTopSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getTopSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?2";
         String data = this.sendReceive(cmd, false);
 
@@ -437,7 +446,7 @@ public class TecanXCalibur extends TecanPump {
         return (int) this.state.get("topSpeed");
     }
 
-    private int getCutoffSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getCutoffSpeed() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?3";
         String data = this.sendReceive(cmd, false);
 
@@ -448,7 +457,7 @@ public class TecanXCalibur extends TecanPump {
         return (int) this.state.get("cutoffSpeed");
     }
 
-    private int getEncoderPosition() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getEncoderPosition() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?4";
         String data = this.sendReceive(cmd, false);
 
@@ -457,17 +466,17 @@ public class TecanXCalibur extends TecanPump {
         return value;
     }
 
-    private int getCurrentPort() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getCurrentPort() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?6";
         String data = this.sendReceive(cmd, false);
 
-        int value = Integer.parseInt(data);
+        int value = (data.equals("?")) ? 0 : Integer.parseInt(data);
 
         this.state.put("valvePort", value);
         return (int) this.state.get("valvePort");
     }
 
-    private int getBufferStatus() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public int getBufferStatus() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "?10";
         String data = this.sendReceive(cmd, false);
 
@@ -485,7 +494,7 @@ public class TecanXCalibur extends TecanPump {
     //                                Config commands
     //************************************************************************************
 
-    private void setMicrostep(boolean microstep) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public void setMicrostep(boolean microstep) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = String.format("N%d", (microstep) ? 1 : 0);
         this.sendReceive(cmd, true);
         this.microstep = microstep;
@@ -500,7 +509,7 @@ public class TecanXCalibur extends TecanPump {
     //                                Control commands
     //************************************************************************************
 
-    private String terminateCmd() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public String terminateCmd() throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         String cmd = "T";
         return this.sendReceive(cmd, true);
     }
@@ -546,7 +555,7 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private void waitReady(int pollingInterval, int timeout, int delay) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public void waitReady(int pollingInterval, int timeout, int delay) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         try {
             super.waitUntilReady(pollingInterval, timeout, delay);
         }
@@ -555,16 +564,14 @@ public class TecanXCalibur extends TecanPump {
         }
     }
 
-    private String sendReceive(String cmd, boolean execute) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
+    public String sendReceive(String cmd, boolean execute) throws SyringeCommandException, IOException, MaximumAttemptsException, SyringeTimeoutException {
         if (execute)
             cmd += "R";
 
         this.lastCmd = cmd;
 
         try {
-
             return super.sendReceive(cmd).first;
-
         } catch (SyringeCommandException e) {
             this.handleSyringeExceptions(e);
         }
@@ -572,8 +579,8 @@ public class TecanXCalibur extends TecanPump {
         return "";
     }
 
-    private int getPlungerMoveDuration(int steps) {
-        int moveTime = 0;
+    private double getPlungerMoveDuration(int steps) {
+        double moveTime = 0;
 
         int startSpeed = (int) this.simState.get("startSpeed");
         int topSpeed = (int) this.simState.get("topSpeed");
@@ -594,21 +601,22 @@ public class TecanXCalibur extends TecanPump {
             theoreticalTopSpeed = (int) Math.sqrt(((2 * steps * slope) + ((startSpeed ^ 2 + cutoffSpeed ^ 2)/2.0)));
 
         if (cutoffSpeed < theoreticalTopSpeed && theoreticalTopSpeed < topSpeed)
-            moveTime = (int) ((1.0/slope) * (2.0 * theoreticalTopSpeed - startSpeed - cutoffSpeed));
+            moveTime = ((1.0/slope) * (2.0 * theoreticalTopSpeed - startSpeed - cutoffSpeed));
         else if (startSpeed == topSpeed && topSpeed == cutoffSpeed)
-            moveTime = (int) ((2.0 * steps) / topSpeed);
+            moveTime = ((2.0 * steps) / topSpeed);
         else {
             int rampUpHalfsteps = (int) ((topSpeed ^ 2 - startSpeed ^ 2) / (2.0 * slope));
             int rampDownHalfsteps = (int) ((topSpeed ^ 2 - cutoffSpeed ^ 2) / (2.0 * slope));
 
             if ((rampUpHalfsteps + rampDownHalfsteps) < (2.0 * topSpeed)){
-                int rampUpTime = (topSpeed - startSpeed) / slope;
-                int rampDownTime = (topSpeed - cutoffSpeed) / slope;
-                int constantHalfsteps = (2 * steps - rampUpHalfsteps - rampDownHalfsteps);
-                int constantTime = constantHalfsteps / topSpeed;
+                double rampUpTime = (topSpeed - startSpeed) / slope;
+                double rampDownTime = (topSpeed - cutoffSpeed) / slope;
+                double constantHalfsteps = (2 * steps - rampUpHalfsteps - rampDownHalfsteps);
+                double constantTime = constantHalfsteps / topSpeed;
                 moveTime = rampUpTime + rampDownTime + constantTime;
             }
         }
+        System.out.println("getPlungerMoveDuration() : " + moveTime);
         return moveTime;
     }
 

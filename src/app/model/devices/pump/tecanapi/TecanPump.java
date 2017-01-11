@@ -79,7 +79,7 @@ public class TecanPump {
 
         try {
             int ready = this.sendReceive("Q").second;
-            return (ready == 1) ? true : false;
+            return (ready == 1);
         } catch (MaximumAttemptsException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -101,9 +101,15 @@ public class TecanPump {
 
         while ((start - System.currentTimeMillis()) < (start + timeout)) {
             boolean ready = this.checkReady();
-
-            if (ready == false)
-                Util.sleep(pollingInterval);
+            System.out.println("READY??????????? " + ready);
+            if (!ready)
+//                Util.sleep(pollingInterval);
+                try {
+                    System.out.println("zzzzzzzzzzzzzzzzzzzzzzzz");
+                    Thread.sleep(pollingInterval);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             else
                 return;
         }
