@@ -72,9 +72,10 @@ public class JSSCSerialTransport{
                         try {
 
                             byte[] frame = serialPort.readBytes();
-                            System.out.println("read: "+Arrays.toString(frame));
-                            int value = frame[0] & 0xff;    //convert to int
-                            String st = String.valueOf(value);
+
+//                            System.out.println("read: "+Arrays.toString(frame));
+//                            int value = frame[0] & 0xff;    //convert to int
+//                            String st = String.valueOf(value);
 
                             for (byte b : frame)
                                 this.byteQueue.add(b);
@@ -121,7 +122,7 @@ public class JSSCSerialTransport{
         }
     }
 
-    public void write(byte[] frame) {
+    public synchronized void write(byte[] frame) {
         try {
                 if (serialPort != null)
                     serialPort.writeBytes(frame);
@@ -134,7 +135,7 @@ public class JSSCSerialTransport{
     }
 
     public byte[] read() {
-        Util.sleep(200);
+        Util.sleepMillis(200);
         if (this.byteQueue.size() > 0) {
 
             byte[] frame = new byte[this.byteQueue.size()];

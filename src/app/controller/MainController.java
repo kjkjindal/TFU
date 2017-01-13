@@ -9,7 +9,7 @@ import javafx.fxml.FXML;
  * Author: alexskrynnyk
  * Date: 12/20/16
  */
-public class MainTabController {
+public class MainController {
 
     @FXML private ProtocolController protocolController;
     @FXML private PumpSetupController pumpSetupController;

@@ -16,7 +16,7 @@ public class AppController {
     private Stage primaryStage;
 
     @FXML private MenuController menuBarController;
-    @FXML private MainTabController mainTabsController;
+    @FXML private MainController mainTabsController;
 
     public AppController(Stage primaryStage) { this.primaryStage = primaryStage; }
 

@@ -45,9 +45,17 @@ public class Util {
         return list;
     }
 
-    public static void sleep(int timeMillis) {
+    public static void sleepMillis(int timeMillis) {
         try {
             TimeUnit.MILLISECONDS.sleep(timeMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sleepSecs(int timeSecs) {
+        try {
+            TimeUnit.SECONDS.sleep(timeSecs);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

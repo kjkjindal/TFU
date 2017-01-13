@@ -1,11 +1,11 @@
 package app.model.devices.pump.tecanapi;
 
+import app.model.devices.MaximumAttemptsException;
 import app.model.services.serial.JSSCSerialTransport;
+import app.model.services.serial.JSSCSerialTransportSingleton;
 import app.utility.Util;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,7 +19,7 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
     private int serialBaud;
     private int serialMillisTimeout;
     private int maxAttempts;
-    public JSSCSerialTransport serialTransport;
+    public JSSCSerialTransportSingleton serialTransport;
 
     public TecanFrameSerialTransporter(int address, String portName, int serialBaud,
                                        int serialMillisTimeout, int maxAttempts) {
@@ -30,9 +30,9 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         this.serialMillisTimeout = serialMillisTimeout;
         this.maxAttempts = maxAttempts;
 
-        this.serialTransport = new JSSCSerialTransport(portName, serialBaud, serialMillisTimeout);
-        this.serialTransport.disconnect();
-        this.serialTransport.connect();
+        this.serialTransport = JSSCSerialTransportSingleton.getInstance();
+//        this.serialTransport.disconnect();
+//        this.serialTransport.connect();
     }
 
     public TecanFrameContents sendReceive(String cmd) throws MaximumAttemptsException, IOException {
@@ -70,6 +70,10 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         return this.parseFrame(this.serialTransport.read());
     }
 
+    public void connect() throws IOException {
+        this.serialTransport.connect(this.portName, this.serialBaud);
+    }
+
     public void disconnect() throws IOException {
         this.serialTransport.disconnect();
     }
@@ -78,46 +82,63 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
         System.out.println(JSSCSerialTransport.getSerialPorts());
 
         TecanFrameSerialTransporter tecan1 = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial", 9600, 200, 2);
+        TecanFrameSerialTransporter tecan2 = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial6", 9600, 200, 2);
 
         try {
-            TecanXCalibur pump = new TecanXCalibur(tecan1, false);
-            pump.init();
-//            pump.setSpeed(6);
-//            pump.extract(2, 1000);
-//            double time = pump.executeChain();
-//            System.out.println("SHOULD TAKE: " + time);
-//            Util.sleep(15*1000);
-//            pump.dispense(1, 1000);
-//            pump.executeChain();
+            TecanXCalibur pump1 = new TecanXCalibur(tecan1, false);
 
-//            pump.sendReceive("S6IA24000OS16A0", true);
+            tecan1.connect();
 
-//            System.out.println(pump.getCurrentPort());
+//            pump1.init();
+
+            pump1.setSpeed(8);
+
+            pump1.extract(7, 1000);
+
+            pump1.setSpeed(10);
+
+            pump1.dispense(1, 1000);
+
+            double time = pump1.executeChain() * 1.1;
+
+            Util.sleepMillis((int) time);
 
             tecan1.disconnect();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (MaximumAttemptsException e) {
-            e.printStackTrace();
-        } catch (SyringeCommandException e) {
-            e.printStackTrace();
-        } catch (SyringeTimeoutException e) {
-            e.printStackTrace();
-        }
 
-        Util.sleep(5000);
 
-        TecanFrameSerialTransporter tecan2 = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial2", 9600, 200, 2);
-        try {
             TecanXCalibur pump2 = new TecanXCalibur(tecan2, false);
-            pump2.init();
-//            System.out.println(pump2.getConfig());
-//            pump.setSpeed(6);
-//            pump.extract(2, 1000);
+
+            tecan2.connect();
+
+//            pump2.init();
+
+            pump2.setSpeed(15);
+
+            pump2.extract(7, 500);
+
+            pump2.setSpeed(18);
+
+            pump2.dispense(1, 500);
+
+            time = pump2.executeChain() * 1.1;
+
+            Util.sleepMillis((int) time);
+
+            tecan2.disconnect();
+
+
+
+//            System.out.println(tecan1.sendReceive("S15O2P12000I1D12000R").getData());
+//            pump.init();
+            // S15Z2P12000Y1D12000
+//            System.out.println(pump.getConfig());
+//            pump.setSpeed(15);
+//            pump.extract(1, 1000);
+//            pump.dispense(9, 1000);
 //            double time = pump.executeChain();
 //            System.out.println("SHOULD TAKE: " + time);
-//            Util.sleep(15*1000);
+//            Util.sleepMillis(15*1000);
 //            pump.dispense(1, 1000);
 //            pump.executeChain();
 
@@ -125,19 +146,45 @@ public class TecanFrameSerialTransporter extends TecanFrameHandler {
 
 //            System.out.println(pump.getCurrentPort());
 
-            tecan2.disconnect();
+//            tecan1.disconnect();
 
-            System.exit(0);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (MaximumAttemptsException e) {
-            e.printStackTrace();
-        } catch (SyringeCommandException e) {
-            e.printStackTrace();
-        } catch (SyringeTimeoutException e) {
+        } catch (IOException | MaximumAttemptsException | SyringeTimeoutException | SyringeCommandException e) {
             e.printStackTrace();
         }
+
+//        Util.sleepMillis(5000);
+//
+//        TecanFrameSerialTransporter tecan2 = new TecanFrameSerialTransporter(0, "/dev/tty.usbserial1", 9600, 200, 2);
+//        try {
+//            TecanXCalibur pump2 = new TecanXCalibur(tecan2, false);
+////            pump2.init();
+//////            System.out.println(pump2.getConfig());
+//////            pump.setSpeed(6);
+//////            pump.extract(2, 1000);
+//////            double time = pump.executeChain();
+//////            System.out.println("SHOULD TAKE: " + time);
+//////            Util.sleepMillis(15*1000);
+//////            pump.dispense(1, 1000);
+//////            pump.executeChain();
+////
+//////            pump.sendReceive("S6IA24000OS16A0", true);
+////
+//////            System.out.println(pump.getCurrentPort());
+////
+//            tecan1.disconnect();
+//            tecan2.disconnect();
+////
+////            System.exit(0);
+////
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (MaximumAttemptsException e) {
+//            e.printStackTrace();
+//        } catch (SyringeCommandException e) {
+//            e.printStackTrace();
+//        } catch (SyringeTimeoutException e) {
+//            e.printStackTrace();
+//        }
 
 
 //        try {

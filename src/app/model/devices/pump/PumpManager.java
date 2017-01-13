@@ -1,9 +1,15 @@
 package app.model.devices.pump;
 
+import app.model.devices.MaximumAttemptsException;
+import app.model.devices.pump.tecanapi.*;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Project: FluidXMan
@@ -13,27 +19,45 @@ import javafx.collections.ObservableList;
 public class PumpManager {
 
     private ListProperty<Pump> pumpList;
+    private TecanPumpManager tecanPumpManager;
 
     public PumpManager() {
         this.pumpList = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-        Pump pump1 = new Pump();
-        for(int i = 0; i < 9; i++) {
-            PumpPort port = new PumpPort(pump1, i);
-//            port.setPortName("Pump ONE port "+i);
-            pump1.addPumpPort(port);
+        this.tecanPumpManager = new TecanPumpManager();
+
+        try {
+
+            this.pumpList.addAll(
+                    this.generatePumpsFromAPI(
+                            this.tecanPumpManager.getSerialTecanPumps(
+                                    this.tecanPumpManager.findSerialTecanPumps()
+                            )
+                    )
+            );
+
+        } catch (SyringeCommandException e) {
+            e.printStackTrace();
+        } catch (SyringeTimeoutException e) {
+            e.printStackTrace();
+        } catch (MaximumAttemptsException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        this.pumpList.add(pump1);
+    }
 
-        Pump pump2 = new Pump();
-        for(int i = 0; i < 9; i++) {
-            PumpPort port = new PumpPort(pump2, i);
-            port.setPortName("Pump TWO port " + i);
-            pump2.addPumpPort(port);
+    private List<Pump> generatePumpsFromAPI(List<TecanPumpManager.Pump> pumps) throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
+        List<Pump> pumpList = new ArrayList<>();
+
+        for (TecanPumpManager.Pump pump : pumps) {
+            Pump p = new Pump(pump.getPortName(), pump.getPump());
+
+            pumpList.add(p);
         }
 
-        this.pumpList.add(pump2);
+        return pumpList;
     }
 
     public ObservableList<Pump> getPumpList() {
@@ -44,5 +68,7 @@ public class PumpManager {
         return pumpList;
     }
 
-    public void setPumpList(ObservableList<Pump> pumpList) { this.pumpList.set(pumpList); }
+    public void setPumpList(ObservableList<Pump> pumpList) {
+        this.pumpList.set(pumpList);
+    }
 }

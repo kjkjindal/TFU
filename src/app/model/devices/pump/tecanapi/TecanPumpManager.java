@@ -1,7 +1,8 @@
 package app.model.devices.pump.tecanapi;
 
-import app.model.services.serial.SerialTransport;
-import gnu.io.CommPortIdentifier;
+import app.model.devices.MaximumAttemptsException;
+import app.model.services.serial.JSSCSerialTransport;
+import app.model.services.serial.JSSCSerialTransportSingleton;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,36 +14,53 @@ import java.util.*;
  */
 public class TecanPumpManager {
 
-    private Map<String, TecanFrameSerialTransporter> portTransportMap;
-
     public TecanPumpManager() {
 
     }
 
-    private List<PumpData> findSerialTecanPumps() {
-        Map<String, CommPortIdentifier> map = SerialTransport.getSerialPorts();
+    public List<PumpData> findSerialTecanPumps() {
+        List<String> ports = JSSCSerialTransportSingleton.getSerialPorts();
 
         List<PumpData> foundPumps = new ArrayList<>();
 
-        for (String portName : map.keySet()) {
+        for (String portName : ports) {
+            TecanFrameSerialTransporter transporter = null;
             try {
-                TecanFrameSerialTransporter transporter = new TecanFrameSerialTransporter(0, portName, 9600, 200, 3);
+                transporter = new TecanFrameSerialTransporter(0, portName, 9600, 200, 3);
+
+                transporter.connect();
 
                 String config = transporter.sendReceive("?76").getData();
                 String fwVersion = transporter.sendReceive("&").getData();
 
+                transporter.disconnect();
+
                 foundPumps.add(new PumpData(transporter, portName, config, fwVersion));
-            } catch (Exception e) {  }
+            } catch (Exception e) {
+
+            } finally {
+                if (transporter != null)
+                    try {
+                        transporter.disconnect();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+            }
         }
 
         return foundPumps;
     }
 
-    private List<Pump> getSerialTecanPumps(List<PumpData> foundPumps) throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
+    public List<Pump> getSerialTecanPumps(List<PumpData> foundPumps) throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {
         List<Pump> pumps = new ArrayList<>();
 
         for (PumpData pumpData : foundPumps) {
-            TecanPump pump = new TecanXCalibur(pumpData.getTransporter(), false);
+            TecanXCalibur pump = new TecanXCalibur(pumpData.getTransporter(), false);
+
+            pump.connect();
+            pump.init();
+            pump.disconnect();
+
             pumps.add(new Pump(pumpData.getPortName(), pump));
         }
 
@@ -93,12 +111,12 @@ public class TecanPumpManager {
 
     }
 
-    private class Pump {
+    public class Pump {
 
         private String portName;
-        private TecanPump pump;
+        private TecanXCalibur pump;
 
-        public Pump(String portName, TecanPump pump) {
+        public Pump(String portName, TecanXCalibur pump) {
             this.portName = portName;
             this.pump = pump;
         }
@@ -107,7 +125,7 @@ public class TecanPumpManager {
             return portName;
         }
 
-        public TecanPump getPump() {
+        public TecanXCalibur getPump() {
             return pump;
         }
 

@@ -1,4 +1,4 @@
-package app.model.devices.pump.tecanapi;
+package app.model.devices;
 
 /**
  * Project: FluidXMan

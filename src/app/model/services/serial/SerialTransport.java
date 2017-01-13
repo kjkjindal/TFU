@@ -21,6 +21,7 @@ public class SerialTransport implements SerialPortEventListener{
     private boolean isConnected = false;
 
     private SerialReader reader;
+    private SerialWriter writer;
     private Queue<Byte> byteQueue;
 
     public SerialTransport(String portName, int serialBaud, int serialMillisTimeout) {
@@ -101,9 +102,12 @@ public class SerialTransport implements SerialPortEventListener{
                     this.isConnected = true;
 
                     this.initListener();
-//                this.reader = new SerialReader(this.in, this.byteQueue);
-//                new Thread(reader).start();
-//                (new Thread(new SerialWriter(this.out))).start();
+
+                    this.reader = new SerialReader(this.in, this.byteQueue);
+                    new Thread(this.reader).start();
+
+                    this.writer = new SerialWriter(this.out);
+                    (new Thread(this.writer)).start();
 
                 } else { throw new UnsupportedPortTypeException("Error: Only serial ports are handled by this example"); }
             } else { throw new SerialPortInUseException("Error: Port is currently in use"); }
@@ -191,7 +195,7 @@ public class SerialTransport implements SerialPortEventListener{
     }
 
     public byte[] read() throws IOException {
-        Util.sleep(100);
+        Util.sleepMillis(100);
         if (this.byteQueue.size() > 0) {
 
             byte[] frame = new byte[this.byteQueue.size()];

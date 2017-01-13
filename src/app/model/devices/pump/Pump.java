@@ -1,5 +1,6 @@
 package app.model.devices.pump;
 
+import app.model.devices.pump.tecanapi.TecanXCalibur;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,14 +14,24 @@ public class Pump {
 
     private ListProperty<PumpPort> pumpPortList;
     private IntegerProperty syringeVolume;
-    private IntegerProperty numPortrs;
+    private IntegerProperty numPorts;
     private StringProperty pumpName;
+    private TecanXCalibur pumpAPI;
 
-    public Pump() {
+    public Pump(String portName, TecanXCalibur pump) {
+        this.pumpAPI = pump;
+
         this.pumpPortList = new SimpleListProperty<>(FXCollections.observableArrayList());
-        this.syringeVolume = new SimpleIntegerProperty(1000);
-        this.numPortrs = new SimpleIntegerProperty(9);
-        this.pumpName = new SimpleStringProperty("New pump");
+        this.syringeVolume = new SimpleIntegerProperty(pump.getSyringeVolume());
+        this.numPorts = new SimpleIntegerProperty(pump.getNumPorts());
+        this.pumpName = new SimpleStringProperty(portName);
+
+        this.generatePumpPorts();
+    }
+
+    private void generatePumpPorts() {
+        for (int i = 0; i < this.numPorts.get(); i++)
+            this.addPumpPort(new PumpPort(this, i+1));
     }
 
     public void addPumpPort(PumpPort port) {
@@ -49,15 +60,23 @@ public class Pump {
 
     public void setSyringeVolume(int syringeVolume) { this.syringeVolume.set(syringeVolume); }
 
-    public int getNumPortrs() { return numPortrs.get(); }
+    public int getNumPorts() { return numPorts.get(); }
 
-    public IntegerProperty numPortrsProperty() { return numPortrs; }
+    public IntegerProperty numPortsProperty() { return numPorts; }
 
-    public void setNumPortrs(int numPortrs) { this.numPortrs.set(numPortrs); }
+    public void setNumPorts(int numPorts) { this.numPorts.set(numPorts); }
 
     public String getPumpName() { return pumpName.get(); }
 
     public StringProperty pumpNameProperty() { return pumpName; }
 
     public void setPumpName(String pumpName) { this.pumpName.set(pumpName); }
+
+    public TecanXCalibur getPumpAPI() {
+        return pumpAPI;
+    }
+
+    public void setPumpAPI(TecanXCalibur pumpAPI) {
+        this.pumpAPI = pumpAPI;
+    }
 }

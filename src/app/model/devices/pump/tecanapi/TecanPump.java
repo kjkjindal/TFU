@@ -1,5 +1,6 @@
 package app.model.devices.pump.tecanapi;
 
+import app.model.devices.MaximumAttemptsException;
 import app.utility.Tuple;
 import app.utility.Util;
 
@@ -36,11 +37,29 @@ public class TecanPump {
     private boolean reapeatError;
     private int prevErrorCode;
 
+    protected int numPorts = 9;
+    protected int syringeVolume = 1000;
+    protected int wastePort = 9;
+
+    protected int initForce = 0;
+
     public TecanPump(TecanFrameSerialTransporter transporter) {
         this.serialTransporter = transporter;
         this.prevErrorCode = 0;
         this.reapeatError = false;
         this.ready = false;
+    }
+
+    public TecanPump(TecanFrameSerialTransporter transporter, int numPorts, int syringeVolume, int wastePort, int initForce) {
+        this.serialTransporter = transporter;
+        this.prevErrorCode = 0;
+        this.reapeatError = false;
+        this.ready = false;
+
+        this.numPorts = numPorts;
+        this.syringeVolume = syringeVolume;
+        this.wastePort = wastePort;
+        this.initForce = initForce;
     }
 
     protected Tuple<String, Integer> sendReceive(String cmd) throws IOException, MaximumAttemptsException, SyringeCommandException {
@@ -74,12 +93,19 @@ public class TecanPump {
     }
 
     private boolean checkReady() throws SyringeCommandException {
-        if (this.ready)
-            return true;
+        System.out.println("IN CHECKREADY()");
+//        if (this.ready) {
+//            System.out.println("this.raedy = " + this.ready);
+//            return true;
+//        }
 
         try {
             int ready = this.sendReceive("Q").second;
+
+            System.out.println("COMMAND 'Q' = " + ready);
+
             return (ready == 1);
+
         } catch (MaximumAttemptsException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -95,7 +121,7 @@ public class TecanPump {
 
     protected void waitUntilReady(int pollingInterval, int timeout, int delay) throws SyringeTimeoutException, SyringeCommandException {
         if (delay > 0)
-            Util.sleep(delay);
+            Util.sleepMillis(delay);
 
         long start = System.currentTimeMillis();
 
@@ -103,7 +129,7 @@ public class TecanPump {
             boolean ready = this.checkReady();
             System.out.println("READY??????????? " + ready);
             if (!ready)
-//                Util.sleep(pollingInterval);
+//                Util.sleepMillis(pollingInterval);
                 try {
                     System.out.println("zzzzzzzzzzzzzzzzzzzzzzzz");
                     Thread.sleep(pollingInterval);
@@ -117,6 +143,44 @@ public class TecanPump {
         throw new SyringeTimeoutException("Syringe in timeout for accepting commands");
     }
 
+    public void connect() throws IOException {
+        this.serialTransporter.connect();
+    }
 
+    public void disconnect() throws IOException {
+        this.serialTransporter.disconnect();
+    }
+
+    public int getNumPorts() {
+        return numPorts;
+    }
+
+    public void setNumPorts(int numPorts) {
+        this.numPorts = numPorts;
+    }
+
+    public int getSyringeVolume() {
+        return syringeVolume;
+    }
+
+    public void setSyringeVolume(int syringeVolume) {
+        this.syringeVolume = syringeVolume;
+    }
+
+    public int getWastePort() {
+        return wastePort;
+    }
+
+    public void setWastePort(int wastePort) {
+        this.wastePort = wastePort;
+    }
+
+    public int getInitForce() {
+        return initForce;
+    }
+
+    public void setInitForce(int initForce) {
+        this.initForce = initForce;
+    }
 
 }

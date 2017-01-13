@@ -6,6 +6,7 @@ import app.model.devices.pump.PumpManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
 import java.io.IOException;
@@ -34,17 +35,23 @@ public class PumpSetupController {
 
     private void setupControls() {
         try {
-            for(Pump pump : this.pumpManager.getPumpList()) {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/pumpsetup/tecan/pump.fxml")
-                );
+            if (this.pumpManager.getPumpList().size() > 0) {
+                for (Pump pump : this.pumpManager.getPumpList()) {
+                    FXMLLoader loader = new FXMLLoader(
+                            getClass().getResource("/pumpsetup/tecan/pump.fxml")
+                    );
 
-                Node controls = loader.load();
+                    Node controls = loader.load();
 
-                PumpController controller = loader.getController();
-                controller.configure(pump);
+                    PumpController controller = loader.getController();
+                    controller.configure(pump);
 
-                this.pumps.getChildren().add(controls);
+                    this.pumps.getChildren().add(controls);
+                }
+            } else {
+                Label label = new Label("No pumps were found");
+
+                this.pumps.getChildren().add(label);
             }
         } catch (IOException e) {
             e.printStackTrace();

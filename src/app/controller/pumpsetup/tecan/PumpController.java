@@ -1,5 +1,8 @@
 package app.controller.pumpsetup.tecan;
 
+import app.model.devices.MaximumAttemptsException;
+import app.model.devices.pump.tecanapi.SyringeCommandException;
+import app.model.devices.pump.tecanapi.SyringeTimeoutException;
 import app.utility.Util;
 import app.model.devices.pump.Pump;
 import javafx.collections.FXCollections;
@@ -64,7 +67,7 @@ public class PumpController {
         });
 
         Util.restrictTextFieldLength(this.numPorts, 1);
-        Util.confineTextFieldToNumericAndBind(this.numPorts, this.pump::setNumPortrs);
+        Util.confineTextFieldToNumericAndBind(this.numPorts, this.pump::setNumPorts);
     }
 
     private void loadPortControls() {
@@ -82,6 +85,73 @@ public class PumpController {
                 this.ports.getChildren().add(controls);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handleInit() {
+        try {
+
+            this.pump.getPumpAPI().connect();
+
+            this.pump.getPumpAPI().init();
+
+            this.pump.getPumpAPI().disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (MaximumAttemptsException e) {
+            e.printStackTrace();
+        } catch (SyringeTimeoutException e) {
+            e.printStackTrace();
+        } catch (SyringeCommandException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handlePlungerDown() {
+        try {
+
+            this.pump.getPumpAPI().connect();
+
+            this.pump.getPumpAPI().setSpeed(11);
+            this.pump.getPumpAPI().extract(1, this.pump.getSyringeVolume());
+            this.pump.getPumpAPI().executeChain();
+
+            this.pump.getPumpAPI().disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (MaximumAttemptsException e) {
+            e.printStackTrace();
+        } catch (SyringeTimeoutException e) {
+            e.printStackTrace();
+        } catch (SyringeCommandException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handlePlungerUp() {
+        try {
+
+            this.pump.getPumpAPI().connect();
+
+            this.pump.getPumpAPI().setSpeed(11);
+            this.pump.getPumpAPI().dispense(1, this.pump.getSyringeVolume());
+            this.pump.getPumpAPI().executeChain();
+
+            this.pump.getPumpAPI().disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (MaximumAttemptsException e) {
+            e.printStackTrace();
+        } catch (SyringeTimeoutException e) {
+            e.printStackTrace();
+        } catch (SyringeCommandException e) {
             e.printStackTrace();
         }
     }
