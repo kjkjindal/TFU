@@ -74,8 +74,8 @@ public class ArduinoFrameHandler {
     public static void main(String[] args) {
         ArduinoFrameHandler api = new ArduinoFrameHandler();
 
-        System.out.println(Arrays.toString(api.emitFrame("S50")));
-        System.out.println(api.parseFrame(api.emitFrame("S50")));
+        System.out.println(Arrays.toString(api.emitFrame("S50/")));
+        System.out.println(api.parseFrame(api.emitFrame("S50/")));
     }
 
 }

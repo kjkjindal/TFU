@@ -65,6 +65,6 @@ public abstract class Command implements ProtocolComponent, Saveable {
     public Status getStatus() { return this.status.get(); }
 
     @Override
-    public abstract void execute();
+    public abstract void execute() throws CommandExecutionException;
 
 }

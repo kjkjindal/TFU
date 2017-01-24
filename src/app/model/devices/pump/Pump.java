@@ -22,8 +22,8 @@ public class Pump {
         this.pumpAPI = pump;
 
         this.pumpPortList = new SimpleListProperty<>(FXCollections.observableArrayList());
-        this.syringeVolume = new SimpleIntegerProperty(pump.getSyringeVolume());
-        this.numPorts = new SimpleIntegerProperty(pump.getNumPorts());
+        this.syringeVolume = new SimpleIntegerProperty(1000);
+        this.numPorts = new SimpleIntegerProperty(9);
         this.pumpName = new SimpleStringProperty(portName);
 
         this.generatePumpPorts();

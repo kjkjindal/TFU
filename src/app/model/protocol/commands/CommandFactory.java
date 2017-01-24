@@ -1,6 +1,8 @@
 package app.model.protocol.commands;
 
 import app.model.devices.pump.PumpManager;
+import app.model.devices.thermocycler.ThermocyclerManager;
+import app.model.devices.thermocycler.arduinoapi.ArduinoThermocyclerManager;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
@@ -12,25 +14,30 @@ import org.w3c.dom.NamedNodeMap;
 public class CommandFactory {
 
     private PumpManager pumpManager;
+    private ThermocyclerManager thermocyclerManager;
 
-    public CommandFactory(PumpManager pumpManager) {
+    public CommandFactory(PumpManager pumpManager, ThermocyclerManager thermocyclerManager) {
         this.pumpManager = pumpManager;
+        this.thermocyclerManager = thermocyclerManager;
     }
 
-    public static Command createCommand(CommandType type) {
+    public Command createCommand(CommandType type) {
         Command cmd = null;
         switch (type) {
             case OneWayCommand:
-                cmd = new OneWayCommand();
+                cmd = new OneWayCommand(this.pumpManager.pumpListProperty());
                 break;
             case WaitCommand:
                 cmd = new WaitCommand();
+                break;
+            case TemperatureCommand:
+                cmd = new TemperatureCommand(this.thermocyclerManager.thermocyclerListProperty());
                 break;
             case EmailCommand:
                 cmd = new EmailCommand();
                 break;
             case WashSyringeCommand:
-                cmd = new WashSyringeCommand();
+                cmd = new WashSyringeCommand(this.pumpManager.pumpListProperty());
                 break;
             default:
                 break;
@@ -38,14 +45,14 @@ public class CommandFactory {
         return cmd;
     }
 
-    public static Command createCommandFromXML(Element element) {
+    public Command createCommandFromXML(Element element) {
         NamedNodeMap attributes = element.getAttributes();
 
         CommandType type = CommandType.getByClassName(attributes.getNamedItem("type").getNodeValue());
 
         switch (type) {
             case OneWayCommand:
-                OneWayCommand cmd = (OneWayCommand) CommandFactory.createCommand(type);
+                OneWayCommand cmd = (OneWayCommand) this.createCommand(type);
 
                 cmd.setName(attributes.getNamedItem("name").getNodeValue());
                 cmd.setVolume(Integer.valueOf(attributes.getNamedItem("volume").getNodeValue()));

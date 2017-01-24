@@ -1,7 +1,10 @@
 package app.model.devices.thermocycler.arduinoapi;
 
+import app.model.devices.MaximumAttemptsException;
+import app.model.devices.pump.tecanapi.SyringeCommandException;
 import app.model.services.serial.JSSCSerialTransport;
 import app.model.services.serial.JSSCSerialTransportSingleton;
+import app.utility.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,24 +17,26 @@ import java.util.List;
  */
 public class ArduinoThermocyclerManager {
 
-    public List<ThermocyclerData> findSerialTecanPumps() {
+    public List<ThermocyclerData> findSerialArduinoThermocyclers() {
         List<String> ports = JSSCSerialTransportSingleton.getSerialPorts();
 
         List<ThermocyclerData> foundThermocyclers = new ArrayList<>();
 
         for (String portName : ports) {
             ArduinoFrameSerialTransporter transporter = null;
+
             try {
                 transporter = new ArduinoFrameSerialTransporter(0, portName, 9600, 200, 3);
 
                 transporter.connect();
 
-                String id = transporter.sendReceive("getID");
+                String id = transporter.sendReceive("?C");
 
                 transporter.disconnect();
 
                 if (id.equals("ArduinoThermocycler"))
                     foundThermocyclers.add(new ThermocyclerData(transporter, portName, id));
+
             } catch (Exception e) {
 
             } finally {
@@ -47,15 +52,15 @@ public class ArduinoThermocyclerManager {
         return foundThermocyclers;
     }
 
-    public List<Thermocycler> getSerialTecanPumps(List<ThermocyclerData> foundPumps) throws IOException {
-        List<Thermocycler> pumps = new ArrayList<>();
+    public List<Thermocycler> getSerialArduinoThermocyclers(List<ThermocyclerData> foundPumps) throws IOException {
+        List<Thermocycler> thermocyclers = new ArrayList<>();
 
         for (ThermocyclerData thermocyclerData : foundPumps) {
-            ArduinoThermocycler pump = new ArduinoThermocycler(thermocyclerData.getTransporter());
-            pumps.add(new Thermocycler(thermocyclerData.getPortName(), pump));
+            ArduinoThermocycler thermocycler = new ArduinoThermocycler(thermocyclerData.getTransporter());
+            thermocyclers.add(new Thermocycler(thermocyclerData.getPortName(), thermocycler));
         }
 
-        return pumps;
+        return thermocyclers;
     }
 
     private class ThermocyclerData {
@@ -111,8 +116,32 @@ public class ArduinoThermocyclerManager {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        ArduinoThermocyclerManager manager = new ArduinoThermocyclerManager();
 
+        List<ThermocyclerData> foundThermocyclers = manager.findSerialArduinoThermocyclers();
+
+        System.out.println("ey");
+
+        System.out.println(foundThermocyclers);
+
+        List<Thermocycler> thermocyclers = manager.getSerialArduinoThermocyclers(foundThermocyclers);
+
+        System.out.println("eyy");
+
+        System.out.println(thermocyclers);
+
+        Thermocycler thermo = thermocyclers.get(0);
+
+        thermo.getThermocycler().connect();
+        try {
+            System.out.println(thermo.getThermocycler().sendReceive("?S"));
+        } catch (MaximumAttemptsException e) {
+            e.printStackTrace();
+        } catch (SyringeCommandException e) {
+            e.printStackTrace();
+        }
+        thermo.getThermocycler().disconnect();
     }
 
 }

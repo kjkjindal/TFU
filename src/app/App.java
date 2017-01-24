@@ -1,6 +1,7 @@
 package app;
 
 import app.controller.AppController;
+import app.model.services.serial.JSSCSerialTransportSingleton;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -30,6 +31,7 @@ public class App extends Application {
      */
     @Override
     public void stop() {
+        JSSCSerialTransportSingleton.getInstance().disconnect();
         System.exit(0);
     }
 

@@ -6,8 +6,9 @@ package app.model.protocol.commands;
  * Date: 12/22/16
  */
 public enum CommandType {
-    OneWayCommand("OneWayCommand", "One Way Command"),
+    OneWayCommand("OneWayCommand", "Extract-dispense Command"),
     WashSyringeCommand("WashSyringeCommand", "Wash Syringe Command"),
+    TemperatureCommand("TemperatureCommand", "Temperature Command"),
     EmailCommand("EmailCommand", "E-mail Command"),
     WaitCommand("WaitComand", "Wait Command");
 

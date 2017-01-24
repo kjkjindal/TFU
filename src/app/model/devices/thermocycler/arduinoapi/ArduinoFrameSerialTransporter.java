@@ -2,8 +2,10 @@ package app.model.devices.thermocycler.arduinoapi;
 
 import app.model.devices.MaximumAttemptsException;
 import app.model.services.serial.JSSCSerialTransportSingleton;
+import app.utility.Util;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,14 +64,27 @@ public class ArduinoFrameSerialTransporter extends ArduinoFrameHandler {
     }
 
     private String receiveFrame() throws IOException {
-        return this.parseFrame(this.serialTransport.read());
+        byte[] frame = this.serialTransport.read();
+        return this.parseFrame(frame);
     }
 
     public void connect() throws IOException {
         this.serialTransport.connect(this.portName, this.serialBaud);
+        Util.sleepMillis(2500);
     }
 
     public void disconnect() throws IOException {
         this.serialTransport.disconnect();
+    }
+
+    public static void main(String[] args) {
+        ArduinoFrameSerialTransporter transporter = new ArduinoFrameSerialTransporter(0, "/dev/tty.usbmodem1411", 9600, 200, 2);
+        try {
+            transporter.connect();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

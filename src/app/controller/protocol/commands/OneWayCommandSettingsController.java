@@ -1,12 +1,22 @@
 package app.controller.protocol.commands;
 
+import app.model.devices.pump.PortType;
+import app.model.devices.pump.Pump;
+import app.model.devices.pump.PumpPort;
 import app.utility.Util;
 import app.controller.protocol.SettingsController;
 import app.model.protocol.ProtocolComponent;
 import app.model.protocol.commands.OneWayCommand;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Project: FluidXMan
@@ -17,9 +27,9 @@ public class OneWayCommandSettingsController implements SettingsController {
 
     @FXML private ComboBox<String> fromPort;
     @FXML private ComboBox<String> toPort;
-    @FXML private ComboBox<String> extractSpeed;
+    @FXML private ComboBox<Integer> extractSpeed;
     @FXML private TextField volume;
-    @FXML private ComboBox<String> dispenseSpeed;
+    @FXML private ComboBox<Integer> dispenseSpeed;
 
     private OneWayCommand command;
 
@@ -37,34 +47,87 @@ public class OneWayCommandSettingsController implements SettingsController {
     }
 
     private void setupControls() {
-        //TODO: provide items for all comboboxes
+
+        List<String> fromPortNames = new ArrayList<>();
+        for (PumpPort port : this.getPumpPortList()) {
+            if (port.getPortType() == PortType.REAGENT ||
+                    port.getPortType() == PortType.WASH ||
+                    port.getPortType() == PortType.OUTPUT)
+                fromPortNames.add(port.getPortName());
+        }
+
+        this.fromPort.setItems(FXCollections.observableList(fromPortNames));
 
         this.fromPort.setValue((this.command.getFromPort() == null) ? "Empty" : this.command.getFromPort().getPortName());
         this.toPort.setValue((this.command.getToPort() == null) ? "Empty" : this.command.getToPort().getPortName());
         this.volume.setText(String.valueOf(this.command.getVolume()));
-        this.extractSpeed.setValue(String.valueOf(this.command.getExtractSpeed()));
-        this.dispenseSpeed.setValue(String.valueOf(this.command.getDispenseSpeed()));
+
+
+        List<Integer> speeds = new ArrayList<>();
+        for (int i = 0; i < 36; i++)
+            speeds.add(i);
+
+        this.extractSpeed.setItems(FXCollections.observableList(speeds));
+        this.dispenseSpeed.setItems(FXCollections.observableList(speeds));
+
+        this.extractSpeed.setValue(this.command.getExtractSpeed());
+        this.dispenseSpeed.setValue(this.command.getDispenseSpeed());
     }
 
     private void bindModelToControls() {
         this.fromPort.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
-            //TODO: set cmd's fromPort
+            for (PumpPort port : this.getPumpPortList()) {
+                if (port.getPortName().equals(newVal)) {
+                    this.command.setFromPort(port);
+                    this.updateCommandName();
+                }
+            }
+
+            List<String> toPortNames = new ArrayList<>();
+            for (PumpPort port : this.command.getFromPort().getPump().getPumpPortList()) {
+                if (port.getPortType() == PortType.REAGENT ||
+                        port.getPortType() == PortType.WASH ||
+                        port.getPortType() == PortType.OUTPUT ||
+                        port.getPortType() == PortType.WASTE)
+                    toPortNames.add(port.getPortName());
+            }
+
+            this.toPort.setItems(FXCollections.observableList(toPortNames));
         });
 
         this.toPort.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
-            //TODO: set cmd's toPort
+            for (PumpPort port : this.command.getFromPort().getPump().getPumpPortList()) {
+                if (port.getPortName().equals(newVal)) {
+                    this.command.setToPort(port);
+                    this.updateCommandName();
+                }
+            }
         });
 
         Util.restrictTextFieldLength(this.volume, 4);
         Util.confineTextFieldToNumericAndBind(this.volume, this.command::setVolume);
 
-        this.toPort.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
-            //TODO: set cmd's extractSpeed
+        this.extractSpeed.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
+            this.command.setExtractSpeed(newVal);
         });
 
-        this.toPort.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
-            //TODO: set cmd's dispenseSpeed
+        this.dispenseSpeed.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
+            this.command.setDispenseSpeed(newVal);
         });
+    }
+
+    private void updateCommandName() {
+        command.setName(String.format("Dispense '%s' to '%s'",
+                (this.command.getFromPort() == null) ? "Empty" : this.command.getFromPort().getPortName(),
+                (this.command.getToPort() == null) ? "Empty" : this.command.getToPort().getPortName()));
+    }
+
+
+    private ArrayList<PumpPort> getPumpPortList() {
+        return this.command.getPumpList()
+                .stream()
+                .map(Pump::getPumpPortList)
+                .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     }
 
 }

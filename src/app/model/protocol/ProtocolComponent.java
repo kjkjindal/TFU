@@ -1,5 +1,6 @@
 package app.model.protocol;
 
+import app.model.protocol.commands.CommandExecutionException;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -23,5 +24,5 @@ public interface ProtocolComponent {
     int getDuration();
     IntegerProperty durationProperty();
 
-    void execute();
+    void execute() throws CommandExecutionException;
 }

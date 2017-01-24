@@ -1,16 +1,22 @@
 package app.model.protocol.commands;
 
 import app.model.Logger;
+import app.model.devices.MaximumAttemptsException;
+import app.model.devices.pump.tecanapi.SyringeCommandException;
+import app.model.devices.pump.tecanapi.SyringeTimeoutException;
 import app.model.protocol.Status;
 import app.model.devices.pump.Pump;
 import app.model.devices.pump.PumpPort;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import app.utility.Util;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Project: FluidXMan
@@ -22,12 +28,15 @@ public class OneWayCommand extends Command {
     private IntegerProperty volume;
     private IntegerProperty extractSpeed;
     private IntegerProperty dispenseSpeed;
+    private ListProperty<Pump> pumpList;
     private ObjectProperty<Pump> pump;
     private ObjectProperty<PumpPort> fromPort;
     private ObjectProperty<PumpPort> toPort;
 
-    public OneWayCommand() {
+    public OneWayCommand(ListProperty<Pump> pumpList) {
         super();
+
+        this.pumpList = pumpList;
 
         this.volume = new SimpleIntegerProperty(0);
         this.extractSpeed = new SimpleIntegerProperty(15);
@@ -35,6 +44,78 @@ public class OneWayCommand extends Command {
         this.pump = new SimpleObjectProperty<>(null);
         this.fromPort = new SimpleObjectProperty<>(null);
         this.toPort = new SimpleObjectProperty<>(null);
+    }
+
+    @Override
+    // TODO: make execution on separate thread
+    public void execute() throws CommandExecutionException {
+        this.setStatus(Status.IN_PROGRESS);
+
+        try {
+            Logger.log("EXECUTING COMMAND: " + this.getName());
+            Logger.log(" - Using pump " + this.pump.get().getPumpName());
+            Logger.log(" - Setting extraction speed to " + this.extractSpeed.get());
+            Logger.log(" - Extracting " + this.volume.get() + " uL from " + this.fromPort);
+            Logger.log(" - Setting dispense speed to " + this.dispenseSpeed.get());
+            Logger.log(" - Dispensing " + this.volume.get() + " uL to " + this.toPort);
+
+            this.pump.get().getPumpAPI().connect();
+            this.pump.get().getPumpAPI().setSpeed(this.extractSpeed.get());
+            this.pump.get().getPumpAPI().extract(this.fromPort.get().getPortNum(), this.volume.get());
+            this.pump.get().getPumpAPI().setSpeed(this.dispenseSpeed.get());
+            this.pump.get().getPumpAPI().dispense(this.toPort.get().getPortNum(), this.volume.get());
+            double duration = this.pump.get().getPumpAPI().executeChain();
+            this.pump.get().getPumpAPI().disconnect();
+
+            Util.sleepMillis((int) duration);
+
+            Logger.log("DONE EXECUTING");
+
+        } catch (MaximumAttemptsException | SyringeTimeoutException | IOException | SyringeCommandException e) {
+            this.setStatus(Status.ERROR);
+            throw new CommandExecutionException("Failed to properly execute command!",e);
+        }
+
+        this.setStatus(Status.COMPLETE);
+    }
+
+    @Override
+    public Element getXML(Document doc) {
+        Element cmdElement = doc.createElement("command");
+
+        Attr type = doc.createAttribute("type");
+        type.setValue(this.getClass().getSimpleName());
+        cmdElement.setAttributeNode(type);
+
+        Attr name = doc.createAttribute("name");
+        name.setValue(this.getName());
+        cmdElement.setAttributeNode(name);
+
+        Attr volume = doc.createAttribute("volume");
+        volume.setValue(String.valueOf(this.getVolume()));
+        cmdElement.setAttributeNode(volume);
+
+        Attr extractSpeed = doc.createAttribute("extractSpeed");
+        extractSpeed.setValue(String.valueOf(this.getExtractSpeed()));
+        cmdElement.setAttributeNode(extractSpeed);
+
+        Attr dispenseSpeed = doc.createAttribute("dispenseSpeed");
+        dispenseSpeed.setValue(String.valueOf(this.getDispenseSpeed()));
+        cmdElement.setAttributeNode(dispenseSpeed);
+
+        Attr pump = doc.createAttribute("pump");
+        pump.setValue("test pump string");
+        cmdElement.setAttributeNode(pump);
+
+        Attr fromPort = doc.createAttribute("fromPort");
+        fromPort.setValue(String.valueOf(this.getFromPort()));
+        cmdElement.setAttributeNode(fromPort);
+
+        Attr toPort = doc.createAttribute("toPort");
+        toPort.setValue(String.valueOf(this.getToPort()));
+        cmdElement.setAttributeNode(toPort);
+
+        return cmdElement;
     }
 
     public void setVolume(int newVolume) { this.volume.set(newVolume); }
@@ -73,63 +154,15 @@ public class OneWayCommand extends Command {
 
     public ObjectProperty<PumpPort> toPortProperty() { return this.toPort; }
 
-    @Override
-    // TODO: make execution on separate thread
-    public void execute() {
-        this.setStatus(Status.IN_PROGRESS);
-        try {
-            Logger.log("Using pump " + this.pump);
-
-            Logger.log("Setting extraction speed to " + this.extractSpeed.get());
-
-            Logger.log("Extracting " + this.volume.get() + " uL from " + this.fromPort);
-
-            Logger.log("Setting dispense speed to " + this.dispenseSpeed.get());
-
-            Logger.log("Dispensing " + this.volume.get() + " uL to " + this.toPort);
-        } catch (Exception e) {
-            this.setStatus(Status.ERROR);
-            throw e;
-        }
-        this.setStatus(Status.COMPLETE);
+    public ObservableList<Pump> getPumpList() {
+        return pumpList.get();
     }
 
-    @Override
-    public Element getXML(Document doc) {
-        Element noteElement = doc.createElement("command");
+    public ListProperty<Pump> pumpListProperty() {
+        return pumpList;
+    }
 
-        Attr type = doc.createAttribute("type");
-        type.setValue(this.getClass().getSimpleName());
-        noteElement.setAttributeNode(type);
-
-        Attr name = doc.createAttribute("name");
-        name.setValue(this.getName());
-        noteElement.setAttributeNode(name);
-
-        Attr volume = doc.createAttribute("volume");
-        volume.setValue(String.valueOf(this.getVolume()));
-        noteElement.setAttributeNode(volume);
-
-        Attr extractSpeed = doc.createAttribute("extractSpeed");
-        extractSpeed.setValue(String.valueOf(this.getExtractSpeed()));
-        noteElement.setAttributeNode(extractSpeed);
-
-        Attr dispenseSpeed = doc.createAttribute("dispenseSpeed");
-        dispenseSpeed.setValue(String.valueOf(this.getDispenseSpeed()));
-        noteElement.setAttributeNode(dispenseSpeed);
-
-        Attr pump = doc.createAttribute("pump");
-        pump.setValue("test pump string");
-        noteElement.setAttributeNode(pump);
-
-        Attr fromPort = doc.createAttribute("fromPort");
-        fromPort.setValue(String.valueOf(this.getFromPort()));
-        noteElement.setAttributeNode(fromPort);
-
-        Attr toPort = doc.createAttribute("toPort");
-        toPort.setValue(String.valueOf(this.getToPort()));
-        noteElement.setAttributeNode(toPort);
-
-        return noteElement;
+    public void setPumpList(ObservableList<Pump> pumpList) {
+        this.pumpList.set(pumpList);
     }
 }

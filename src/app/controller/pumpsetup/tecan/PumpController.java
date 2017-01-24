@@ -118,7 +118,9 @@ public class PumpController {
 
             this.pump.getPumpAPI().setSpeed(11);
             this.pump.getPumpAPI().extract(1, this.pump.getSyringeVolume());
-            this.pump.getPumpAPI().executeChain();
+            double duration = this.pump.getPumpAPI().executeChain();
+
+            Util.sleepMillis((int) duration);
 
             this.pump.getPumpAPI().disconnect();
 
@@ -141,7 +143,9 @@ public class PumpController {
 
             this.pump.getPumpAPI().setSpeed(11);
             this.pump.getPumpAPI().dispense(1, this.pump.getSyringeVolume());
-            this.pump.getPumpAPI().executeChain();
+            double duration = this.pump.getPumpAPI().executeChain();
+
+            Util.sleepMillis((int) duration);
 
             this.pump.getPumpAPI().disconnect();
 

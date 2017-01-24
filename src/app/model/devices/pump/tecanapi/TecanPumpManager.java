@@ -25,6 +25,7 @@ public class TecanPumpManager {
 
         for (String portName : ports) {
             TecanFrameSerialTransporter transporter = null;
+
             try {
                 transporter = new TecanFrameSerialTransporter(0, portName, 9600, 200, 3);
 

@@ -4,6 +4,7 @@ import app.model.Debugging;
 import app.model.Logger;
 import app.model.Saveable;
 import app.model.protocol.commands.Command;
+import app.model.protocol.commands.CommandExecutionException;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -103,13 +104,13 @@ public class Cycle implements ProtocolComponent, Saveable {
         return this.commandList;
     }
 
-    public void execute() {
+    public void execute() throws CommandExecutionException {
         this.setStatus(Status.IN_PROGRESS);
         try {
             for (Command c : this.commandList)
                 if (c != null)
                     c.execute();
-        } catch (Exception e) {
+        } catch (CommandExecutionException e) {
             this.setStatus(Status.ERROR);
             throw e;
         }

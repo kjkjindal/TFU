@@ -4,6 +4,7 @@ import app.model.Debugging;
 import app.model.Logger;
 import app.model.Saveable;
 import app.model.protocol.commands.Command;
+import app.model.protocol.commands.CommandExecutionException;
 import app.model.protocol.commands.CommandFactory;
 import app.model.protocol.commands.CommandType;
 import javafx.beans.property.*;
@@ -23,6 +24,7 @@ public class Protocol implements ProtocolComponent, Saveable {
     private StringProperty name;
     private IntegerProperty duration;
     private ObjectProperty<Status> status;
+    private ObjectProperty<CommandFactory> commandFactory;
 
     private static Protocol _instance = null;
 
@@ -32,16 +34,17 @@ public class Protocol implements ProtocolComponent, Saveable {
         this.duration = new SimpleIntegerProperty(0);
         this.status = new SimpleObjectProperty<>(Status.NOT_STARTED);
 
+        /*
         Cycle cycle = new Cycle();
         cycle.setName("T2S seq primer anneal");
 
-        Command cmd1 = CommandFactory.createCommand(CommandType.OneWayCommand);
+        Command cmd1 = this.commandFactory.get().createCommand(CommandType.OneWayCommand);
         cmd1.setName("Dispense '1x instrument buffer' to 'sample'");
         cmd1.setStatus(Status.COMPLETE);
-        Command cmd2 = CommandFactory.createCommand(CommandType.OneWayCommand);
+        Command cmd2 = this.commandFactory.get().createCommand(CommandType.OneWayCommand);
         cmd2.setStatus(Status.IN_PROGRESS);
         cmd2.setName("Extract 'sample' to 'waste'");
-        Command cmd3 = CommandFactory.createCommand(CommandType.OneWayCommand);
+        Command cmd3 = this.commandFactory.get().createCommand(CommandType.OneWayCommand);
         cmd3.setName("Wait for 15 min");
 
         cycle.addCommand(cmd1);
@@ -49,6 +52,7 @@ public class Protocol implements ProtocolComponent, Saveable {
         cycle.addCommand(cmd3);
 
         this.cycleList.add(cycle);
+        */
     }
 
     public static Protocol getInstance() {
@@ -63,7 +67,7 @@ public class Protocol implements ProtocolComponent, Saveable {
     }
 
     @Override
-    public void execute() {
+    public void execute() throws CommandExecutionException {
         this.setStatus(Status.IN_PROGRESS);
         try {
             for (Cycle c : this.cycleList)
@@ -103,6 +107,7 @@ public class Protocol implements ProtocolComponent, Saveable {
         if(newName != null)
             this.name.set(newName);
     }
+
     @Override
     public String getName() {
         return this.name.get();

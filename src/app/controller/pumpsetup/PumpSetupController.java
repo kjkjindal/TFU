@@ -24,7 +24,7 @@ public class PumpSetupController {
 
     @FXML
     public void initialize() {
-        this.configure(new PumpManager());
+
     }
 
     public void configure(PumpManager pumpManager) {

@@ -29,8 +29,9 @@ import java.util.stream.Collectors;
 public class ProtocolController {
 
     private Protocol protocol;
+    private CommandFactory commandFactory;
 
-    @FXML private TreeView protocolTree;
+    @FXML private TreeView<ProtocolComponent> protocolTree;
     @FXML private StackPane controlsPane;
 
     private Map<ProtocolComponent, Node> componentSettingsMap;
@@ -38,25 +39,28 @@ public class ProtocolController {
     @FXML
     public void initialize() {
         this.protocol = Protocol.getInstance();
-        this.protocol.setName("SOLiD 7bp in situ seq");
+        this.protocol.setName("New protocol");
 
         this.componentSettingsMap = new HashMap<>();
 
         this.protocolTree.setCellFactory(f -> new ProtocolTreeCell());
 
         this.bindTreeSelection();
-
         this.drawExperimentTree();
     }
 
+    public void configure(CommandFactory commandFactory) {
+        this.commandFactory = commandFactory;
+    }
+
     private void drawExperimentTree() {
-        TreeItem<ProtocolComponent> root = new TreeItem(this.protocol);
+        TreeItem<ProtocolComponent> root = new TreeItem<>(this.protocol);
 
         for(Cycle c: this.protocol.getCycleList()) {
-            TreeItem<ProtocolComponent> cycleItem = new TreeItem(c);
+            TreeItem<ProtocolComponent> cycleItem = new TreeItem<>(c);
 
             for(Command cmd: c.getCommands()){
-                TreeItem<ProtocolComponent> commandItem = new TreeItem(cmd);
+                TreeItem<ProtocolComponent> commandItem = new TreeItem<>(cmd);
                 cycleItem.getChildren().add(commandItem);
             }
 
@@ -70,7 +74,7 @@ public class ProtocolController {
 
     private void bindTreeSelection() {
         this.protocolTree.getSelectionModel().selectedItemProperty().addListener((item, oldVal, newVal) -> {
-            TreeItem treeItem = (TreeItem) item.getValue();
+            TreeItem treeItem = item.getValue();
 
             ProtocolComponent component = (ProtocolComponent) treeItem.getValue();
 
@@ -119,7 +123,7 @@ public class ProtocolController {
         private ImageView remove;
         private ImageView icon;
 
-        public ProtocolTreeCell() {
+        ProtocolTreeCell() {
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/FXcomponents/protocolTreeCell.fxml")
             );
@@ -140,7 +144,7 @@ public class ProtocolController {
         private void configureCell(ProtocolComponent obj) {
             name.textProperty().bind(obj.nameProperty());
             duration.setText(obj.getDuration()+" min");
-
+            /*
             String url = String.valueOf(
                     getClass().getResource("/resources/img/"+obj.getClass().getSimpleName()+"-"+obj.getStatus().getCompoundName()+"-icon.png")
             );
@@ -149,7 +153,7 @@ public class ProtocolController {
 
             Image img = new Image(url);
             icon.setImage(img);
-
+            */
             if (obj instanceof Command) {
                 add.setVisible(false);
 
@@ -177,21 +181,23 @@ public class ProtocolController {
                             .map(CommandType::getFullName)
                             .collect(Collectors.toList());
 
-                    ChoiceDialog dialog = new ChoiceDialog(commandOptions.get(0), commandOptions);
+                    ChoiceDialog<String> dialog = new ChoiceDialog<>(commandOptions.get(0), commandOptions);
                     dialog.setTitle("Idk");
                     dialog.setHeaderText("Select the type of command to add");
 
                     Optional<String> result = dialog.showAndWait();
 
                     if (result.isPresent()) {
-                        Command newCmd = CommandFactory.createCommand(CommandType.getByFullName(result.get()));
+                        Command newCmd = ProtocolController.this.commandFactory.createCommand(CommandType.getByFullName(result.get()));
 
-                        TreeItem newItem = new TreeItem(newCmd);
+                        TreeItem<ProtocolComponent> newItem = new TreeItem<>(newCmd);
 
                         ((Cycle) getItem()).addCommand(newCmd);
 
                         getTreeItem().getChildren().add(newItem);
                         getTreeItem().setExpanded(true);
+
+                        //System.out.println(ProtocolController.this.protocol.getCycleList());
                     }
                 });
                 remove.setOnMouseClicked(e -> {
@@ -217,7 +223,7 @@ public class ProtocolController {
                 add.setOnMouseClicked(e -> {
                     Cycle newCycle = new Cycle();
 
-                    TreeItem newItem = new TreeItem(newCycle);
+                    TreeItem<ProtocolComponent> newItem = new TreeItem<>(newCycle);
 
                     protocol.addCycle(newCycle);
 

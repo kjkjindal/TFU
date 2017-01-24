@@ -46,6 +46,14 @@ public class PumpManager {
             e.printStackTrace();
         }
 
+        if (this.pumpList.size() == 0) {
+
+            Pump pump1 = new Pump("pump1", null);
+            this.pumpList.add(pump1);
+
+            Pump pump2 = new Pump("pump2", null);
+            this.pumpList.add(pump2);
+        }
     }
 
     private List<Pump> generatePumpsFromAPI(List<TecanPumpManager.Pump> pumps) throws SyringeCommandException, SyringeTimeoutException, MaximumAttemptsException, IOException {

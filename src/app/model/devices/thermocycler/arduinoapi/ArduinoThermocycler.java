@@ -2,6 +2,7 @@ package app.model.devices.thermocycler.arduinoapi;
 
 import app.model.devices.MaximumAttemptsException;
 import app.model.devices.pump.tecanapi.SyringeCommandException;
+import app.utility.Util;
 
 import java.io.IOException;
 
@@ -33,25 +34,37 @@ public class ArduinoThermocycler {
     }
 
     public void startTemperatureControl() throws SyringeCommandException, IOException, MaximumAttemptsException {
-        this.sendReceive("start");
+        this.sendReceive("G");
     }
 
     public void stopTemperatureControl() throws SyringeCommandException, IOException, MaximumAttemptsException {
-        this.sendReceive("stop");
+        this.sendReceive("T");
     }
 
     public void setSetpoint(int c) throws SyringeCommandException, IOException, MaximumAttemptsException {
-        this.sendReceive(String.format("S%d", c));
+        this.setpoint = c;
+        this.sendReceive(String.format("S%d/", c));
+    }
+
+    public int getConfig() throws SyringeCommandException, IOException, MaximumAttemptsException {
+        String response = this.sendReceive("?C");
+        return Integer.parseInt(response);
     }
 
     public int getSetpoint() throws SyringeCommandException, IOException, MaximumAttemptsException {
-        String response = this.sendReceive("getSetpoint");
+        String response = this.sendReceive("?S");
         return Integer.parseInt(response);
     }
 
     public int getTemperature() throws SyringeCommandException, IOException, MaximumAttemptsException {
-        String response = this.sendReceive("getTemp");
+        String response = this.sendReceive("?T");
         return Integer.parseInt(response);
+    }
+
+    public void waitUntilReachedSetpoint() throws SyringeCommandException, IOException, MaximumAttemptsException {
+        while (this.getTemperature() < setpoint) {
+            Util.sleepMillis(200);
+        }
     }
 
 }
