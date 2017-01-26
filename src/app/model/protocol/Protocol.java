@@ -77,7 +77,7 @@ public class Protocol implements ProtocolComponent, Saveable {
 
     @Override
     public void execute() throws CommandExecutionException {
-        this.setStatus(Status.IN_PROGRESS);
+        //this.setStatus(Status.IN_PROGRESS);
         try {
             if (this.currentCycleIndex.get() < this.cycleList.size()) {
                 this.taskThread.run(this.cycleList.get(this.currentCycleIndex.get()));
@@ -86,7 +86,7 @@ public class Protocol implements ProtocolComponent, Saveable {
         } catch (IllegalStateException e) {
             throw new CommandExecutionException("A cycle is currently being executed!", e);
         }
-        this.setStatus(Status.COMPLETE);
+        //this.setStatus(Status.COMPLETE);
     }
 
     public void resetCycleIndex() {

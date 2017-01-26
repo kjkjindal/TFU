@@ -4,6 +4,7 @@ import app.model.Logger;
 import app.model.protocol.*;
 import app.model.protocol.commands.*;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -111,6 +112,8 @@ public class ProtocolController {
         return this.protocol;
     }
 
+    private Map<ProtocolComponent, ChangeListener> statusListenerMap = new HashMap<>();
+
     private final class ProtocolTreeCell extends TreeCell<ProtocolComponent> {
 
         private Node cell;
@@ -156,10 +159,14 @@ public class ProtocolController {
 
             setIconByStatus(pc);
 
-            if (pc instanceof Command || pc instanceof Cycle)
-                pc.statusProperty().addListener((item, oldVal, newVal) ->
-                        Platform.runLater(() -> setIconByStatus(pc))
-                );
+            if (pc instanceof Command || pc instanceof Cycle) {
+                if (statusListenerMap.get(pc) != null)
+                    pc.statusProperty().removeListener(statusListenerMap.get(pc));
+
+                ChangeListener listener = (item, oldVal, newVal) -> Platform.runLater(() -> setIconByStatus(pc));
+                pc.statusProperty().addListener(listener);
+                statusListenerMap.put(pc, listener);
+            }
 
             if (pc instanceof Command) {
                 add.setVisible(false);

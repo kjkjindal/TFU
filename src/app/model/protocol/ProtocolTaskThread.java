@@ -81,7 +81,7 @@ public class ProtocolTaskThread extends Thread {
 
     private void waitForCycle() {
         while (this.cycle == null && run.get()) {
-            System.out.println("No task, wait for 200ms and then check again");
+            //System.out.println("No task, wait for 200ms and then check again");
             try {
                 this.lock.wait(200);
             } catch (InterruptedException e) {
