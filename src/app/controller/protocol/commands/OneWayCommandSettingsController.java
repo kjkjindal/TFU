@@ -3,6 +3,7 @@ package app.controller.protocol.commands;
 import app.model.devices.pump.PortType;
 import app.model.devices.pump.Pump;
 import app.model.devices.pump.PumpPort;
+import app.model.protocol.Protocol;
 import app.utility.Util;
 import app.controller.protocol.SettingsController;
 import app.model.protocol.ProtocolComponent;
@@ -80,6 +81,7 @@ public class OneWayCommandSettingsController implements SettingsController {
                 if (port.getPortName().equals(newVal)) {
                     this.command.setFromPort(port);
                     this.updateCommandName();
+                    this.command.setPump(port.getPump());
                 }
             }
 
@@ -117,7 +119,7 @@ public class OneWayCommandSettingsController implements SettingsController {
     }
 
     private void updateCommandName() {
-        command.setName(String.format("Dispense '%s' to '%s'",
+        this.command.setName(String.format("Dispense '%s' to '%s'",
                 (this.command.getFromPort() == null) ? "Empty" : this.command.getFromPort().getPortName(),
                 (this.command.getToPort() == null) ? "Empty" : this.command.getToPort().getPortName()));
     }

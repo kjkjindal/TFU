@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.protocol.commands.WaitCommandSettingsController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <Label text="Hours" GridPane.halignment="CENTER" />
+        <TextField fx:id="hours" alignment="BASELINE_CENTER" maxWidth="100.0" prefWidth="50.0" promptText="0-99" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <Label alignment="BASELINE_CENTER" text="Minutes" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+        <TextField fx:id="minutes" alignment="BASELINE_CENTER" maxWidth="100.0" prefWidth="50.0" promptText="0-60" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <Label text="Seconds" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+        <TextField fx:id="seconds" alignment="BASELINE_CENTER" maxWidth="100.0" prefWidth="50.0" promptText="0-60" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+    </children>
+</GridPane>

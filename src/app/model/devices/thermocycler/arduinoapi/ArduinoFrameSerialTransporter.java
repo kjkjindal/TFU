@@ -47,7 +47,7 @@ public class ArduinoFrameSerialTransporter extends ArduinoFrameHandler {
                 frame = this.emitRepeat();
 
             this.sendFrame(frame);
-
+            Util.sleepMillis(200);
             frameIn = this.receiveFrame();
 
             if (frameIn != null)
@@ -65,6 +65,7 @@ public class ArduinoFrameSerialTransporter extends ArduinoFrameHandler {
 
     private String receiveFrame() throws IOException {
         byte[] frame = this.serialTransport.read();
+        System.out.println("------------Frame = " + Arrays.toString(frame));
         return this.parseFrame(frame);
     }
 

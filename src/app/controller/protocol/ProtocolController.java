@@ -1,12 +1,9 @@
 package app.controller.protocol;
 
-import app.App;
 import app.model.Logger;
 import app.model.protocol.*;
-import app.model.protocol.commands.Command;
-import app.model.protocol.commands.CommandFactory;
-import app.model.protocol.commands.CommandType;
-import app.model.protocol.commands.OneWayCommand;
+import app.model.protocol.commands.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
@@ -31,8 +27,10 @@ public class ProtocolController {
     private Protocol protocol;
     private CommandFactory commandFactory;
 
-    @FXML private TreeView<ProtocolComponent> protocolTree;
-    @FXML private StackPane controlsPane;
+    @FXML
+    private TreeView<ProtocolComponent> protocolTree;
+    @FXML
+    private StackPane controlsPane;
 
     private Map<ProtocolComponent, Node> componentSettingsMap;
 
@@ -56,10 +54,10 @@ public class ProtocolController {
     private void drawExperimentTree() {
         TreeItem<ProtocolComponent> root = new TreeItem<>(this.protocol);
 
-        for(Cycle c: this.protocol.getCycleList()) {
+        for (Cycle c : this.protocol.getCycleList()) {
             TreeItem<ProtocolComponent> cycleItem = new TreeItem<>(c);
 
-            for(Command cmd: c.getCommands()){
+            for (Command cmd : c.getCommands()) {
                 TreeItem<ProtocolComponent> commandItem = new TreeItem<>(cmd);
                 cycleItem.getChildren().add(commandItem);
             }
@@ -123,6 +121,17 @@ public class ProtocolController {
         private ImageView remove;
         private ImageView icon;
 
+        private void setIconByStatus(ProtocolComponent pc) {
+            System.out.println("/resources/img/" + pc.getClass().getSimpleName() + "-" + pc.getStatus().getCompoundName() + "-icon.png");
+            icon.setImage(
+                    new Image(
+                            String.valueOf(
+                                    getClass().getResource("/resources/img/" + pc.getClass().getSimpleName() + "-" + pc.getStatus().getCompoundName() + "-icon.png")
+                            )
+                    )
+            );
+        }
+
         ProtocolTreeCell() {
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/FXcomponents/protocolTreeCell.fxml")
@@ -137,32 +146,31 @@ public class ProtocolController {
                 remove = (ImageView) cell.lookup("#remove");
                 icon = (ImageView) cell.lookup("#icon");
             } catch (IOException ex) {
-                Logger.log(""+ex.getLocalizedMessage()+"\n"+ex);
+                Logger.log("" + ex.getLocalizedMessage() + "\n" + ex);
             }
         }
 
-        private void configureCell(ProtocolComponent obj) {
-            name.textProperty().bind(obj.nameProperty());
-            duration.setText(obj.getDuration()+" min");
-            /*
-            String url = String.valueOf(
-                    getClass().getResource("/resources/img/"+obj.getClass().getSimpleName()+"-"+obj.getStatus().getCompoundName()+"-icon.png")
-            );
+        private void configureCell(ProtocolComponent pc) {
+            name.textProperty().bind(pc.nameProperty());
+            duration.setText(pc.getDuration() + " min");
 
-//            System.out.println("../resources/img/"+obj.getClass().getSimpleName()+"-"+obj.getStatus().getCompoundName()+"-icon.png");
+            setIconByStatus(pc);
 
-            Image img = new Image(url);
-            icon.setImage(img);
-            */
-            if (obj instanceof Command) {
+            if (pc instanceof Command || pc instanceof Cycle)
+                pc.statusProperty().addListener((item, oldVal, newVal) ->
+                        Platform.runLater(() -> setIconByStatus(pc))
+                );
+
+            if (pc instanceof Command) {
                 add.setVisible(false);
 
+                Command cmd = (Command) getItem();
+
                 remove.setOnMouseClicked(e -> {
-                    OneWayCommand cmd = (OneWayCommand) getItem();
 
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setTitle("Please Confirm");
-                    String s = "Are you sure you wish to delete command '"+cmd.getVolume()+"' ?";
+                    String s = "Are you sure you wish to delete command '" + cmd.getName() + "' ?";
                     alert.setContentText(s);
 
                     Optional<ButtonType> result = alert.showAndWait();
@@ -171,9 +179,9 @@ public class ProtocolController {
                         ((Cycle) getTreeItem().getParent().getValue()).removeCommand(cmd);
                         getTreeItem().getParent().getChildren().remove(getTreeItem());
                     }
-                    componentSettingsMap.remove(obj);
+                    componentSettingsMap.remove(pc);
                 });
-            } else if (obj instanceof Cycle) {
+            } else if (pc instanceof Cycle) {
                 add.setVisible(true);
                 add.setOnMouseClicked(e -> {
 
@@ -182,7 +190,7 @@ public class ProtocolController {
                             .collect(Collectors.toList());
 
                     ChoiceDialog<String> dialog = new ChoiceDialog<>(commandOptions.get(0), commandOptions);
-                    dialog.setTitle("Idk");
+                    dialog.setTitle("Add Command");
                     dialog.setHeaderText("Select the type of command to add");
 
                     Optional<String> result = dialog.showAndWait();
@@ -205,7 +213,7 @@ public class ProtocolController {
 
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setTitle("Please Confirm");
-                    String s = "Are you sure you wish to delete cycle '"+cycle.getName()+"' ?";
+                    String s = "Are you sure you wish to delete cycle '" + cycle.getName() + "' ?";
                     alert.setContentText(s);
 
                     Optional<ButtonType> result = alert.showAndWait();
@@ -215,9 +223,9 @@ public class ProtocolController {
 
                         getTreeItem().getParent().getChildren().remove(getTreeItem());
                     }
-                    componentSettingsMap.remove(obj);
+                    componentSettingsMap.remove(pc);
                 });
-            } else if (obj instanceof Protocol) {
+            } else if (pc instanceof Protocol) {
                 add.setVisible(true);
 
                 add.setOnMouseClicked(e -> {
@@ -230,7 +238,7 @@ public class ProtocolController {
                     getTreeItem().getChildren().add(newItem);
                 });
 //                remove.setOnMouseClicked(e -> {
-//                    System.out.println("remove protocol "+obj.getName());
+//                    System.out.println("remove protocol "+pc.getName());
 //                });
             }
         }
@@ -247,6 +255,20 @@ public class ProtocolController {
                 setGraphic(cell);
             }
         }
+    }
+
+    @FXML
+    public void startProtocol() {
+        try {
+            this.protocol.execute();
+        } catch (CommandExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void resetCycleCounter() {
+        this.protocol.resetCycleIndex();
     }
 
 }

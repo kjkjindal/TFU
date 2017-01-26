@@ -26,6 +26,10 @@ public class Protocol implements ProtocolComponent, Saveable {
     private ObjectProperty<Status> status;
     private ObjectProperty<CommandFactory> commandFactory;
 
+    private ProtocolTaskThread taskThread;
+
+    private IntegerProperty currentCycleIndex;
+
     private static Protocol _instance = null;
 
     private Protocol() {
@@ -33,6 +37,11 @@ public class Protocol implements ProtocolComponent, Saveable {
         this.name = new SimpleStringProperty("New protocol");
         this.duration = new SimpleIntegerProperty(0);
         this.status = new SimpleObjectProperty<>(Status.NOT_STARTED);
+
+        this.taskThread = new ProtocolTaskThread();
+        this.taskThread.start();
+
+        this.currentCycleIndex = new SimpleIntegerProperty(0);
 
         /*
         Cycle cycle = new Cycle();
@@ -70,14 +79,18 @@ public class Protocol implements ProtocolComponent, Saveable {
     public void execute() throws CommandExecutionException {
         this.setStatus(Status.IN_PROGRESS);
         try {
-            for (Cycle c : this.cycleList)
-                if (c != null)
-                    c.execute();
-        } catch (Exception e) {
-            this.setStatus(Status.ERROR);
-            throw e;
+            if (this.currentCycleIndex.get() < this.cycleList.size()) {
+                this.taskThread.run(this.cycleList.get(this.currentCycleIndex.get()));
+                this.currentCycleIndex.set(this.currentCycleIndex.get() + 1);
+            }
+        } catch (IllegalStateException e) {
+            throw new CommandExecutionException("A cycle is currently being executed!", e);
         }
         this.setStatus(Status.COMPLETE);
+    }
+
+    public void resetCycleIndex() {
+        this.currentCycleIndex.set(0);
     }
 
     public void addCycle(Cycle cycle) {

@@ -67,11 +67,11 @@ public class OneWayCommand extends Command {
             double duration = this.pump.get().getPumpAPI().executeChain();
             this.pump.get().getPumpAPI().disconnect();
 
-            Util.sleepMillis((int) duration);
+            Util.sleepMillis((int) duration+2000);
 
             Logger.log("DONE EXECUTING");
 
-        } catch (MaximumAttemptsException | SyringeTimeoutException | IOException | SyringeCommandException e) {
+        } catch (Exception e) {
             this.setStatus(Status.ERROR);
             throw new CommandExecutionException("Failed to properly execute command!",e);
         }
@@ -104,15 +104,15 @@ public class OneWayCommand extends Command {
         cmdElement.setAttributeNode(dispenseSpeed);
 
         Attr pump = doc.createAttribute("pump");
-        pump.setValue("test pump string");
+        pump.setValue(this.pump.getName());
         cmdElement.setAttributeNode(pump);
 
         Attr fromPort = doc.createAttribute("fromPort");
-        fromPort.setValue(String.valueOf(this.getFromPort()));
+        fromPort.setValue(String.valueOf((this.getFromPort() == null) ? "Empty" : this.getFromPort().getPortName()));
         cmdElement.setAttributeNode(fromPort);
 
         Attr toPort = doc.createAttribute("toPort");
-        toPort.setValue(String.valueOf(this.getToPort()));
+        toPort.setValue(String.valueOf((this.getToPort() == null) ? "Empty" : this.getToPort().getPortName()));
         cmdElement.setAttributeNode(toPort);
 
         return cmdElement;

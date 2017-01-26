@@ -45,10 +45,16 @@ public class TemperatureCommand extends Command  {
             Logger.log(" - Waiting to reach setpoint: " + this.reachTemp.get());
 
             this.thermocycler.get().getThermocyclerAPI().connect();
-            this.thermocycler.get().getThermocyclerAPI().startTemperatureControl();
             this.thermocycler.get().getThermocyclerAPI().setSetpoint(this.setpoint.get());
-            if (this.reachTemp.get())
-                this.thermocycler.get().getThermocyclerAPI().waitUntilReachedSetpoint();
+            this.thermocycler.get().getThermocyclerAPI().startTemperatureControl();
+            if (this.reachTemp.get()) {
+                int temp = 0;
+                while (temp < this.setpoint.get()) {
+                    temp = this.thermocycler.get().getThermocyclerAPI().getTemperature();
+                    System.out.println("------------------------------- T: " + temp);
+                    Util.sleepMillis(200);
+                }
+            }
             this.thermocycler.get().getThermocyclerAPI().disconnect();
 
             Logger.log("DONE EXECUTING");

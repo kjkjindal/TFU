@@ -75,7 +75,7 @@ public class TemperatureCommandSettingsController implements SettingsController 
     }
 
     private void updateCommandName() {
-        command.setName(String.format("Set temp.: '%s' to %d",
+        this.command.setName(String.format("Set temp.: '%s' to %d",
                 (this.command.getThermocycler() == null) ? "Empty" : this.command.getThermocycler().getThermocyclerName(),
                 Integer.parseInt(this.setpoint.getText())));
     }

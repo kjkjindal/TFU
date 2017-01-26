@@ -35,11 +35,13 @@ public class ArduinoFrameHandler {
 
     private String analyzeFrame(byte[] rawFrame) {
 
+        System.out.println("analyzeFrame() rawFrame = " + Arrays.toString(rawFrame));
+
         List<Byte> frame = new ArrayList<>();
         for (byte b : rawFrame)
             frame.add(b);
 
-        if (frame.size() < 2)
+        if (frame.size() < 1)
             return null;
 
         char[] data = new char[frame.size()];
