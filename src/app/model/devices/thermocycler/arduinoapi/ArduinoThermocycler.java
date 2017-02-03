@@ -56,9 +56,9 @@ public class ArduinoThermocycler {
         return Integer.parseInt(response);
     }
 
-    public int getTemperature() throws SyringeCommandException, IOException, MaximumAttemptsException {
+    public float getTemperature() throws SyringeCommandException, IOException, MaximumAttemptsException {
         String response = this.sendReceive("?T");
-        return Integer.parseInt(response);
+        return Float.parseFloat(response);
     }
 
     public void waitUntilReachedSetpoint() throws SyringeCommandException, IOException, MaximumAttemptsException {

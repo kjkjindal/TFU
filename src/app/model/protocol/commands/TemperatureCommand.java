@@ -48,7 +48,7 @@ public class TemperatureCommand extends Command  {
             this.thermocycler.get().getThermocyclerAPI().setSetpoint(this.setpoint.get());
             this.thermocycler.get().getThermocyclerAPI().startTemperatureControl();
             if (this.reachTemp.get()) {
-                int temp = 0;
+                float temp = 0;
                 while (temp < this.setpoint.get()) {
                     temp = this.thermocycler.get().getThermocyclerAPI().getTemperature();
                     System.out.println("------------------------------- T: " + temp);
@@ -59,9 +59,10 @@ public class TemperatureCommand extends Command  {
 
             Logger.log("DONE EXECUTING");
 
-        } catch (IOException | SyringeCommandException | MaximumAttemptsException e) {
+        } catch (Exception e) {
             this.setStatus(Status.ERROR);
-            throw new CommandExecutionException("Failed to properly execute command!",e);
+            System.out.println("msg: "+e.getMessage());
+            throw new CommandExecutionException(e.getMessage(), e);
         }
 
         this.setStatus(Status.COMPLETE);

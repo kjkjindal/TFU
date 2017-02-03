@@ -7,7 +7,7 @@ package app.model.protocol.commands;
  */
 public class CommandExecutionException extends Exception{
 
-    public CommandExecutionException(String message, Exception e) {
+    public CommandExecutionException(String message, Throwable e) {
         super(message, e);
     }
 

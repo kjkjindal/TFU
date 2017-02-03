@@ -145,6 +145,10 @@ public class Protocol implements ProtocolComponent, Saveable {
         return this.cycleList;
     }
 
+    public ProtocolTaskThread getTaskThread() { return this.taskThread; }
+
+    public ProtocolTaskThread setTaskThread(ProtocolTaskThread t) { return this.taskThread = t; }
+
     @Override
     public Element getXML(Document doc) {
         Element experimentElement = doc.createElement("protocol");

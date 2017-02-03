@@ -39,6 +39,20 @@ public class ProtocolController {
     public void initialize() {
         this.protocol = Protocol.getInstance();
         this.protocol.setName("New protocol");
+        this.protocol.getTaskThread().setUncaughtExceptionHandler((t, e) -> {
+//            Platform.runLater(() -> {
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//
+//                alert.setTitle("Protocol Error");
+//                alert.setHeaderText("An error occurred during execution!");
+//                alert.setContentText(e.getMessage());
+//
+//                alert.showAndWait();
+//            });
+            System.out.println("ERROR");
+            this.protocol.getTaskThread().run();
+
+        });
 
         this.componentSettingsMap = new HashMap<>();
 
@@ -112,7 +126,7 @@ public class ProtocolController {
         return this.protocol;
     }
 
-    private Map<ProtocolComponent, ChangeListener> statusListenerMap = new HashMap<>();
+    private Map<ProtocolComponent, ChangeListener<Status>> statusListenerMap = new HashMap<>();
 
     private final class ProtocolTreeCell extends TreeCell<ProtocolComponent> {
 
@@ -163,7 +177,7 @@ public class ProtocolController {
                 if (statusListenerMap.get(pc) != null)
                     pc.statusProperty().removeListener(statusListenerMap.get(pc));
 
-                ChangeListener listener = (item, oldVal, newVal) -> Platform.runLater(() -> setIconByStatus(pc));
+                ChangeListener<Status> listener = (item, oldVal, newVal) -> Platform.runLater(() -> setIconByStatus(pc));
                 pc.statusProperty().addListener(listener);
                 statusListenerMap.put(pc, listener);
             }
@@ -275,6 +289,11 @@ public class ProtocolController {
 
     @FXML
     public void resetCycleCounter() {
+        for (Cycle cycle : this.protocol.getCycleList()) {
+            cycle.setStatus(Status.NOT_STARTED);
+            for (Command cmd : cycle.getCommands())
+                cmd.setStatus(Status.NOT_STARTED);
+        }
         this.protocol.resetCycleIndex();
     }
 

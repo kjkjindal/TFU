@@ -57,14 +57,10 @@ public class WashSyringeCommand extends Command{
             Logger.log("DONE EXECUTING");
 
             this.pump.get().getPumpAPI().connect();
-
-            /*
             this.pump.get().getPumpAPI().setSpeed(this.extractSpeed.get());
             this.pump.get().getPumpAPI().extract(this.fromPort.get().getPortNum(), this.volume.get());
             this.pump.get().getPumpAPI().setSpeed(this.dispenseSpeed.get());
             this.pump.get().getPumpAPI().dispense(this.toPort.get().getPortNum(), this.volume.get());
-            */
-
             double duration = this.pump.get().getPumpAPI().executeChain();
             this.pump.get().getPumpAPI().disconnect();
 

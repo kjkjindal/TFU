@@ -3,6 +3,7 @@ package app.model.protocol;
 import app.model.protocol.commands.CommandExecutionException;
 import app.model.protocol.Cycle;
 import app.model.protocol.commands.CommandExecutionException;
+import javafx.scene.control.Alert;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,8 +51,9 @@ public class ProtocolTaskThread extends Thread {
                     ran = executeCycle();
                 } catch (CommandExecutionException e) {
                     System.out.println("Error while executing the Runnable: " + e);
-                    //throw new CommandExecutionException(e.getMessage(), e);
+                    throw new RuntimeException(e.getMessage(), e);
                 } finally {
+                    System.out.println("in finally");
                     cleanupCycle();
                     if (ran) {
                         ran = false;
@@ -81,7 +83,7 @@ public class ProtocolTaskThread extends Thread {
 
     private void waitForCycle() {
         while (this.cycle == null && run.get()) {
-            //System.out.println("No task, wait for 200ms and then check again");
+            System.out.println("No task, wait for 200ms and then check again");
             try {
                 this.lock.wait(200);
             } catch (InterruptedException e) {
